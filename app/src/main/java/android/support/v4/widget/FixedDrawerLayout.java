@@ -23,12 +23,5 @@ public class FixedDrawerLayout extends DrawerLayout {
     public FixedDrawerLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
-
-//    @Override
-//    boolean isContentView(View child) {
-//        if (child == null) {
-//            return false;
-//        }
-//        return super.isContentView(child);
-//    }
+    
 }
