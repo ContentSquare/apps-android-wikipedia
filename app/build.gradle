@@ -83,41 +83,23 @@ android {
 
     buildTypes {
         debug {
+            signingConfig signingConfigs.debug
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
-            testProguardFile 'test-proguard-rules.pro'
         }
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            testProguardFile 'test-proguard-rules.pro'
         }
     }
 
     flavorDimensions 'default'
-
     productFlavors {
-        dev {
-            versionName computeVersionName('dev')
-            applicationIdSuffix 'dev'
-            signingConfig signingConfigs.debug
-            dimension 'default'
-        }
         alpha {
             versionName computeVersionName('alpha')
             applicationIdSuffix 'alpha'
-            signingConfig signingConfigs.debug
             dimension 'default'
-        }
-    }
-
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'x86', 'x86_64', 'arm64-v8a', 'armeabi-v7a'
-            universalApk true
         }
     }
 
@@ -135,20 +117,6 @@ android {
             includeAndroidResources = true
             returnDefaultValues = true
         }
-    }
-}
-
-// Map for the version code that gives each ABI a value.
-ext.abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, x86: 3, x86_64: 4]
-
-// For per-density APKs, create a similar map like this:
-// ext.densityCodes = ['mdpi': 1, 'hdpi': 2, 'xhdpi': 3]
-
-// For each APK output variant, override versionCode with a combination of
-// ext.abiCodes * 10000 + variant.versionCode.
-android.applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-        output.versionCodeOverride = project.ext.abiCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) * 10000 + variant.versionCode
     }
 }
 
@@ -213,16 +181,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.11.3'
 
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
-
-    android.productFlavors.each { flavor ->
-        String dep
-        if ('dev' == flavor.name) {
-            dep = "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
-        } else {
-            dep = "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
-        }
-        "${flavor.name}Implementation" dep
-    }
+    implementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
 
     testImplementation 'junit:junit:4.12'
     testImplementation mockitoCore
