@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.wikipedia.database.contract.AppContentProviderContract;
 import org.wikipedia.database.contract.EditHistoryContract;
 import org.wikipedia.database.contract.PageHistoryContract;
@@ -11,9 +14,6 @@ import org.wikipedia.database.contract.PageImageHistoryContract;
 import org.wikipedia.database.contract.SearchHistoryContract;
 import org.wikipedia.model.EnumCode;
 import org.wikipedia.model.EnumCodeMap;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public enum AppContentProviderEndpoint implements EnumCode {
     HISTORY_PAGE(100, PageHistoryContract.Page.PATH, PageHistoryContract.Page.TABLES,
@@ -31,12 +31,10 @@ public enum AppContentProviderEndpoint implements EnumCode {
     private static final UriMatcher URI_TO_CODE = newUriToCode();
 
     private final int code;
-    @NonNull
-    private final String authority;
+    @NonNull private final String authority;
     @NonNull private final String path;
     @NonNull private final String tables;
-    @Nullable
-    private final String[] projection;
+    @Nullable private final String[] projection;
 
     @NonNull public static AppContentProviderEndpoint of(@NonNull Uri uri) {
         int code = URI_TO_CODE.match(uri);

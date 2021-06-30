@@ -3,13 +3,13 @@ package org.wikipedia.history;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.wikipedia.page.PageTitle;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class HistoryEntry implements Parcelable {
     public static final HistoryEntryDatabaseTable DATABASE_TABLE = new HistoryEntryDatabaseTable();
@@ -21,7 +21,6 @@ public class HistoryEntry implements Parcelable {
     public static final int SOURCE_LANGUAGE_LINK = 6;
     public static final int SOURCE_RANDOM = 7;
     public static final int SOURCE_MAIN_PAGE = 8;
-    public static final int SOURCE_NEARBY = 9;
     public static final int SOURCE_DISAMBIG = 10;
     public static final int SOURCE_READING_LIST = 11;
     public static final int SOURCE_FEED_CONTINUE_READING = 12;
@@ -42,16 +41,19 @@ public class HistoryEntry implements Parcelable {
     public static final int SOURCE_FLOATING_QUEUE = 27;
     public static final int SOURCE_EDIT_DESCRIPTION = 28;
     public static final int SOURCE_WIDGET = 29;
+    public static final int SOURCE_SUGGESTED_EDITS = 30;
+    public static final int SOURCE_TALK_TOPIC = 31;
+    public static final int SOURCE_WATCHLIST = 32;
+    public static final int SOURCE_EDIT_DIFF_DETAILS = 33;
+    public static final int SOURCE_ERROR = 34;
 
-    @NonNull
-    private final PageTitle title;
+    @NonNull private final PageTitle title;
     @NonNull private final Date timestamp;
     private final int source;
     private final int timeSpentSec;
 
     // Transient variable, not stored in the db, to be set when navigating back and forth between articles.
-    @Nullable
-    private String referrer;
+    @Nullable private String referrer;
 
     public HistoryEntry(@NonNull PageTitle title, @NonNull Date timestamp, int source,
                         int timeSpentSec) {

@@ -5,22 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="27dp"
-    android:background="?attr/chart_shade5"
+    android:background="?attr/chip_background_color"
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
         android:background="?attr/paper_color"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:paddingEnd="3dp"
         android:paddingBottom="24dp"
-        android:paddingEnd="3dp">
+        android:paddingTop="8dp">
 
         <include
             android:id="@+id/year_layout"
             layout="@layout/view_on_this_day_event" />
-    </RelativeLayout>
+    </FrameLayout>
 </LinearLayout>

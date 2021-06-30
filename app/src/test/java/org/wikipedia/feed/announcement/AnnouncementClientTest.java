@@ -1,32 +1,24 @@
 package org.wikipedia.feed.announcement;
 
-import androidx.annotation.NonNull;
+import com.google.gson.stream.MalformedJsonException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.wikipedia.dataclient.RestService;
-import org.wikipedia.feed.dataclient.FeedClient.Callback;
-import org.wikipedia.feed.model.Card;
 import org.wikipedia.json.GsonUnmarshaller;
-import org.wikipedia.test.MockWebServerTest;
+import org.wikipedia.test.MockRetrofitTest;
 import org.wikipedia.test.TestFileUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import retrofit2.Call;
+import io.reactivex.rxjava3.core.Observable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
-public class AnnouncementClientTest extends MockWebServerTest {
+public class AnnouncementClientTest extends MockRetrofitTest {
     private static final int ANNOUNCEMENT_IOS = 0;
     private static final int ANNOUNCEMENT_SURVEY_ANDROID = 1;
     private static final int ANNOUNCEMENT_FUNDRAISING_ANDROID = 2;
@@ -35,55 +27,50 @@ public class AnnouncementClientTest extends MockWebServerTest {
     private static final int ANNOUNCEMENT_NO_COUNTRIES = 5;
     private static final int ANNOUNCEMENT_BETA_WITH_VERSION = 6;
     private static final int ANNOUNCEMENT_FOR_OLD_VERSION = 7;
-    @NonNull private AnnouncementClient client = new AnnouncementClient();
     private AnnouncementList announcementList;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+
+    private static final String ANNOUNCEMENT_JSON_FILE = "announce_2016_11_21.json";
 
     @Before
     @Override
     public void setUp() throws Throwable {
         super.setUp();
-        String json = TestFileUtil.readRawFile("announce_2016_11_21.json");
+        String json = TestFileUtil.readRawFile(ANNOUNCEMENT_JSON_FILE);
         announcementList = GsonUnmarshaller.unmarshal(AnnouncementList.class, json);
     }
 
-    @Test public void testRequestSuccess() throws Throwable {
-        enqueueFromFile("announce_2016_11_21.json");
-        Callback cb = mock(Callback.class);
-        request(cb);
-        server().takeRequest();
-        verify(cb).success(anyListOf(Card.class));
-        //noinspection unchecked
-        verify(cb, never()).error(any(Throwable.class));
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
+    public void testRequestSuccess() throws Throwable {
+        enqueueFromFile(ANNOUNCEMENT_JSON_FILE);
+        getObservable().test().await()
+                .assertComplete()
+                .assertNoErrors()
+                .assertValue(list -> list.getItems().size() == 8);
     }
 
     @Test public void testRequestMalformed() throws Throwable {
-        server().enqueue("Jimmy crack corn, and I don't care.");
-        Callback cb = mock(Callback.class);
-        request(cb);
-        server().takeRequest();
-        verify(cb, never()).success(anyListOf(Card.class));
-        verify(cb).error(any(Throwable.class));
+        enqueueMalformed();
+        getObservable().test().await()
+                .assertError(MalformedJsonException.class);
     }
 
     @Test public void testRequestNotFound() throws Throwable {
         enqueue404();
-        Callback cb = mock(Callback.class);
-        request(cb);
-        server().takeRequest();
-        verify(cb, never()).success(anyListOf(Card.class));
-        verify(cb).error(any(Throwable.class));
+        getObservable().test().await()
+                .assertError(Exception.class);
     }
 
-    @Test public void testFundraisingParams() throws Throwable {
-        Announcement announcement = announcementList.items().get(ANNOUNCEMENT_FUNDRAISING_ANDROID);
+    @Test public void testFundraisingParams() {
+        Announcement announcement = announcementList.getItems().get(ANNOUNCEMENT_FUNDRAISING_ANDROID);
         assertThat(announcement.hasAction(), is(true));
         assertThat(announcement.hasFooterCaption(), is(true));
         assertThat(announcement.hasImageUrl(), is(true));
     }
 
     @Test public void testShouldShowByCountry() throws Throwable {
-        Announcement announcement = announcementList.items().get(ANNOUNCEMENT_SURVEY_ANDROID);
+        Announcement announcement = announcementList.getItems().get(ANNOUNCEMENT_SURVEY_ANDROID);
         Date dateDuring = dateFormat.parse("2016-11-20");
         assertThat(AnnouncementClient.shouldShow(announcement, "US", dateDuring), is(true));
         assertThat(AnnouncementClient.shouldShow(announcement, "FI", dateDuring), is(false));
@@ -91,7 +78,7 @@ public class AnnouncementClientTest extends MockWebServerTest {
     }
 
     @Test public void testShouldShowByDate() throws Throwable {
-        Announcement announcement = announcementList.items().get(ANNOUNCEMENT_SURVEY_ANDROID);
+        Announcement announcement = announcementList.getItems().get(ANNOUNCEMENT_SURVEY_ANDROID);
         Date dateBefore = dateFormat.parse("2016-08-01");
         Date dateAfter = dateFormat.parse("2017-01-05");
         assertThat(AnnouncementClient.shouldShow(announcement, "US", dateBefore), is(false));
@@ -99,18 +86,18 @@ public class AnnouncementClientTest extends MockWebServerTest {
     }
 
     @Test public void testShouldShowByPlatform() throws Throwable {
-        Announcement announcementIOS = announcementList.items().get(ANNOUNCEMENT_IOS);
+        Announcement announcementIOS = announcementList.getItems().get(ANNOUNCEMENT_IOS);
         Date dateDuring = dateFormat.parse("2016-11-20");
         assertThat(AnnouncementClient.shouldShow(announcementIOS, "US", dateDuring), is(false));
     }
 
-    @Test public void testShouldShowForInvalidDates() throws Throwable {
-        assertThat(announcementList.items().get(ANNOUNCEMENT_INVALID_DATES), is(nullValue()));
-        assertThat(announcementList.items().get(ANNOUNCEMENT_NO_DATES), is(nullValue()));
+    @Test public void testShouldShowForInvalidDates() {
+        assertThat(announcementList.getItems().get(ANNOUNCEMENT_INVALID_DATES), is(nullValue()));
+        assertThat(announcementList.getItems().get(ANNOUNCEMENT_NO_DATES), is(nullValue()));
     }
 
     @Test public void testShouldShowForInvalidCountries() throws Throwable {
-        Announcement announcement = announcementList.items().get(ANNOUNCEMENT_NO_COUNTRIES);
+        Announcement announcement = announcementList.getItems().get(ANNOUNCEMENT_NO_COUNTRIES);
         Date dateDuring = dateFormat.parse("2016-11-20");
         assertThat(AnnouncementClient.shouldShow(announcement, "US", dateDuring), is(false));
         assertThat(AnnouncementClient.shouldShow(announcement, "FI", dateDuring), is(false));
@@ -118,19 +105,18 @@ public class AnnouncementClientTest extends MockWebServerTest {
     }
 
     @Test public void testBetaWithVersion() throws Throwable {
-        Announcement announcement = announcementList.items().get(ANNOUNCEMENT_BETA_WITH_VERSION);
+        Announcement announcement = announcementList.getItems().get(ANNOUNCEMENT_BETA_WITH_VERSION);
         Date dateDuring = dateFormat.parse("2016-11-20");
         assertThat(AnnouncementClient.shouldShow(announcement, "US", dateDuring), is(true));
     }
 
     @Test public void testForOldVersion() throws Throwable {
-        Announcement announcement = announcementList.items().get(ANNOUNCEMENT_FOR_OLD_VERSION);
+        Announcement announcement = announcementList.getItems().get(ANNOUNCEMENT_FOR_OLD_VERSION);
         Date dateDuring = dateFormat.parse("2016-11-20");
         assertThat(AnnouncementClient.shouldShow(announcement, "US", dateDuring), is(false));
     }
 
-    private void request(@NonNull Callback cb) {
-        Call<AnnouncementList> call = client.request(service(RestService.class));
-        call.enqueue(new AnnouncementClient.CallbackAdapter(cb, false));
+    private Observable<AnnouncementList> getObservable() {
+        return getRestService().getAnnouncements();
     }
 }

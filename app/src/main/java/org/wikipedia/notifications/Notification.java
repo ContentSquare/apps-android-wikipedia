@@ -10,36 +10,33 @@ import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.StringUtils;
 import org.wikipedia.json.GsonUtil;
 import org.wikipedia.util.DateUtil;
-import org.wikipedia.util.log.L;
-import org.wikipedia.wikidata.EntityClient;
+import org.wikipedia.util.UriUtil;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class Notification {
-    public static final String TYPE_EDIT_USER_TALK = "edit-user-talk";
-    public static final String TYPE_REVERTED = "reverted";
-    public static final String TYPE_EDIT_THANK = "edit-thank";
-    public static final String TYPE_WELCOME = "welcome";
-    public static final String TYPE_EDIT_MILESTONE = "thank-you-edit";
-    public static final String TYPE_LOGIN_SUCCESS = "login-success";
-    public static final String TYPE_LOGIN_FAIL_NEW = "login-fail-new";
-    public static final String TYPE_LOGIN_FAIL_KNOWN = "login-fail-known";
-    public static final String TYPE_FOREIGN = "foreign";
+    public static final String CATEGORY_SYSTEM = "system";
+    public static final String CATEGORY_SYSTEM_NO_EMAIL = "system-noemail"; // default welcome
+    public static final String CATEGORY_THANK_YOU_EDIT = "thank-you-edit"; // milestone
+    public static final String CATEGORY_EDIT_USER_TALK = "edit-user-talk";
+    public static final String CATEGORY_EDIT_THANK = "edit-thank";
+    public static final String CATEGORY_REVERTED = "reverted";
+    public static final String CATEGORY_LOGIN_FAIL = "login-fail";
+    public static final String CATEGORY_MENTION = "mention"; // combines "mention", "mention-failure" and "mention-success"
 
-    @SuppressWarnings("unused,NullableProblems") @Nullable private String wiki;
+    @SuppressWarnings("unused") @Nullable private String wiki;
     @SuppressWarnings("unused") private long id;
-    @SuppressWarnings("unused,NullableProblems") @Nullable private String type;
-    @SuppressWarnings("unused,NullableProblems") @Nullable private String category;
+    @SuppressWarnings("unused") @Nullable private String type;
+    @SuppressWarnings("unused") @Nullable private String category;
     @SuppressWarnings("unused") private long revid;
 
-    @SuppressWarnings("unused,NullableProblems") @Nullable private Title title;
-    @SuppressWarnings("unused,NullableProblems") @Nullable private Agent agent;
-    @SuppressWarnings("unused,NullableProblems") @Nullable private Timestamp timestamp;
-    @SuppressWarnings("unused,NullableProblems") @SerializedName("*") @Nullable private Contents contents;
-    @SuppressWarnings("unused,NullableProblems") @Nullable private Map<String, Source> sources;
+    @SuppressWarnings("unused") @Nullable private Title title;
+    @SuppressWarnings("unused") @Nullable private Agent agent;
+    @SuppressWarnings("unused") @Nullable private Timestamp timestamp;
+    @SuppressWarnings("unused") @SerializedName("*") @Nullable private Contents contents;
+    @SuppressWarnings("unused") @Nullable private Map<String, Source> sources;
 
     @NonNull public String wiki() {
         return StringUtils.defaultString(wiki);
@@ -55,6 +52,10 @@ public class Notification {
 
     @NonNull public String type() {
         return StringUtils.defaultString(type);
+    }
+
+    @NonNull public String category() {
+        return StringUtils.defaultString(category);
     }
 
     @Nullable public Agent agent() {
@@ -86,7 +87,7 @@ public class Notification {
     }
 
     public boolean isFromWikidata() {
-        return wiki().equals(EntityClient.WIKIDATA_WIKI);
+        return wiki().equals("wikidatawiki");
     }
 
     @Override public String toString() {
@@ -94,8 +95,8 @@ public class Notification {
     }
 
     public static class Title {
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String full;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String text;
+        @SuppressWarnings("unused") @Nullable private String full;
+        @SuppressWarnings("unused") @Nullable private String text;
         @SuppressWarnings("unused") @Nullable private String namespace;
         @SuppressWarnings("unused") @SerializedName("namespace-key") private int namespaceKey;
 
@@ -118,7 +119,7 @@ public class Notification {
 
     public static class Agent {
         @SuppressWarnings("unused") private int id;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String name;
+        @SuppressWarnings("unused") @Nullable private String name;
 
         @NonNull public String name() {
             return StringUtils.defaultString(name);
@@ -126,27 +127,22 @@ public class Notification {
     }
 
     public static class Timestamp {
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String utciso8601;
+        @SuppressWarnings("unused") @Nullable private String utciso8601;
 
         public Date date() {
-            try {
-                return DateUtil.getIso8601DateFormat().parse(utciso8601);
-            } catch (ParseException e) {
-                L.e(e);
-                return new Date();
-            }
+            return DateUtil.iso8601DateParse(utciso8601);
         }
     }
 
     public static class Link {
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String url;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String label;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String tooltip;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String description;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String icon;
+        @SuppressWarnings("unused") @Nullable private String url;
+        @SuppressWarnings("unused") @Nullable private String label;
+        @SuppressWarnings("unused") @Nullable private String tooltip;
+        @SuppressWarnings("unused") @Nullable private String description;
+        @SuppressWarnings("unused") @Nullable private String icon;
 
         @NonNull public String getUrl() {
-            return StringUtils.defaultString(url);
+            return UriUtil.decodeURL(StringUtils.defaultString(url));
         }
 
         @NonNull public String getTooltip() {
@@ -163,8 +159,8 @@ public class Notification {
     }
 
     public static class Links {
-        @SuppressWarnings("unused,NullableProblems") @Nullable private JsonElement primary;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private List<Link> secondary;
+        @SuppressWarnings("unused") @Nullable private JsonElement primary;
+        @SuppressWarnings("unused") @Nullable private List<Link> secondary;
         private Link primaryLink;
 
         @Nullable public Link getPrimary() {
@@ -183,16 +179,16 @@ public class Notification {
     }
 
     public static class Source {
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String title;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String url;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String base;
+        @SuppressWarnings("unused") @Nullable private String title;
+        @SuppressWarnings("unused") @Nullable private String url;
+        @SuppressWarnings("unused") @Nullable private String base;
 
         @NonNull public String getTitle() {
             return StringUtils.defaultString(title);
         }
 
         @NonNull public String getUrl() {
-            return StringUtils.defaultString(url);
+            return UriUtil.decodeURL(StringUtils.defaultString(url));
         }
 
         @NonNull public String getBase() {
@@ -201,12 +197,12 @@ public class Notification {
     }
 
     public static class Contents {
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String header;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String compactHeader;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String body;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String icon;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String iconUrl;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private Links links;
+        @SuppressWarnings("unused") @Nullable private String header;
+        @SuppressWarnings("unused") @Nullable private String compactHeader;
+        @SuppressWarnings("unused") @Nullable private String body;
+        @SuppressWarnings("unused") @Nullable private String icon;
+        @SuppressWarnings("unused") @Nullable private String iconUrl;
+        @SuppressWarnings("unused") @Nullable private Links links;
 
         @NonNull public String getHeader() {
             return StringUtils.defaultString(header);
@@ -221,7 +217,7 @@ public class Notification {
         }
 
         @NonNull public String getIconUrl() {
-            return StringUtils.defaultString(iconUrl);
+            return UriUtil.decodeURL(StringUtils.defaultString(iconUrl));
         }
 
         @Nullable public Links getLinks() {
@@ -231,7 +227,7 @@ public class Notification {
 
     public static class UnreadNotificationWikiItem {
         @SuppressWarnings("unused") private int totalCount;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private Source source;
+        @SuppressWarnings("unused") @Nullable private Source source;
 
         public int getTotalCount() {
             return totalCount;
@@ -243,8 +239,8 @@ public class Notification {
     }
 
     public static class SeenTime {
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String alert;
-        @SuppressWarnings("unused,NullableProblems") @Nullable private String message;
+        @SuppressWarnings("unused") @Nullable private String alert;
+        @SuppressWarnings("unused") @Nullable private String message;
 
         @Nullable public String getAlert() {
             return alert;

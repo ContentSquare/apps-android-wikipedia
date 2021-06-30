@@ -1,13 +1,12 @@
 package org.wikipedia.gallery;
 
-import com.google.gson.annotations.SerializedName;
-
 import androidx.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 public class ArtistInfo extends TextInfo {
 
-    @SuppressWarnings("unused,NullableProblems") @Nullable
-    private String name;
+    @SuppressWarnings("unused,NullableProblems") @Nullable private String name;
     @SuppressWarnings("unused,NullableProblems") @Nullable @SerializedName("user_page") private String userPage;
 
     @Nullable

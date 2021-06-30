@@ -1,6 +1,7 @@
 package org.wikipedia.json;
 
 import android.net.Uri;
+
 import androidx.annotation.VisibleForTesting;
 
 import com.google.gson.Gson;

@@ -11,12 +11,13 @@ import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.wikipedia.page.Namespace.FILE;
 import static org.wikipedia.page.Namespace.MAIN;
 import static org.wikipedia.page.Namespace.MEDIA;
 import static org.wikipedia.page.Namespace.SPECIAL;
 import static org.wikipedia.page.Namespace.TALK;
+import static org.wikipedia.page.Namespace.USER;
+import static org.wikipedia.page.Namespace.USER_TALK;
 
 @RunWith(RobolectricTestRunner.class) public class NamespaceTest {
     private static Locale PREV_DEFAULT_LOCALE;
@@ -51,7 +52,20 @@ import static org.wikipedia.page.Namespace.TALK;
 
     @Test public void testFromLegacyStringTalk() {
         //noinspection deprecation
-        assertThat(Namespace.fromLegacyString(WikiSite.forLanguageCode("en"), "stringTalk"), is(TALK));
+        assertThat(Namespace.fromLegacyString(WikiSite.forLanguageCode("en"), "Talk"), is(TALK));
+        assertThat(Namespace.fromLegacyString(WikiSite.forLanguageCode("ru"), "Обсуждение"), is(TALK));
+    }
+
+    @Test public void testFromLegacyStringUser() {
+        //noinspection deprecation
+        assertThat(Namespace.fromLegacyString(WikiSite.forLanguageCode("en"), "User"), is(USER));
+        assertThat(Namespace.fromLegacyString(WikiSite.forLanguageCode("af"), "Gebruiker"), is(USER));
+    }
+
+    @Test public void testFromLegacyStringUserTalk() {
+        //noinspection deprecation
+        assertThat(Namespace.fromLegacyString(WikiSite.forLanguageCode("en"), "User talk"), is(USER_TALK));
+        assertThat(Namespace.fromLegacyString(WikiSite.forLanguageCode("vi"), "Thảo luận Thành viên"), is(USER_TALK));
     }
 
     @Test public void testCode() {
@@ -85,15 +99,5 @@ import static org.wikipedia.page.Namespace.TALK;
 
     @Test public void testTalkOdd() {
         assertThat(TALK.talk(), is(true));
-    }
-
-    @Test public void testToLegacyStringMain() {
-        //noinspection deprecation
-        assertThat(MAIN.toLegacyString(), nullValue());
-    }
-
-    @Test public void testToLegacyStringNonMain() {
-        //noinspection deprecation
-        assertThat(TALK.toLegacyString(), is("Talk"));
     }
 }

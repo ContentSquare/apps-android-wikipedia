@@ -1,58 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_main_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/fragment_main_coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/main_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <LinearLayout
+        android:id="@+id/main_nav_tab_container"
+        android:elevation="6dp"
+        android:background="?attr/nav_tab_background_color"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="?attr/actionBarSize">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/fragment_main_coordinator"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <org.wikipedia.readinglist.NoSwipeViewPager
-                    android:id="@+id/fragment_main_view_pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-                <org.wikipedia.main.floatingqueue.FloatingQueueView
-                    android:id="@+id/floating_queue_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/floating_queue_container_height"
-                    android:layout_gravity="bottom"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_marginStart="@dimen/floating_queue_container_margin"
-                    android:layout_marginEnd="@dimen/floating_queue_container_margin"
-                    app:layout_behavior="org.wikipedia.random.BottomViewBehavior"/>
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        </FrameLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
         <org.wikipedia.navtab.NavTabLayout
-            android:id="@+id/fragment_main_nav_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:id="@+id/main_nav_tab_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            android:elevation="6dp"
-            android:background="?attr/nav_tab_background_color"
-            app:tabGravity="fill"
+            android:layout_weight="0.8"
+            android:background="@android:color/transparent"
+            app:elevation="0dp"
             app:itemIconTint="?attr/nav_tab_item_color_state"
+            app:itemTextAppearanceActive="@style/BottomNavigationTextAppearanceActive"
+            app:itemTextAppearanceInactive="@style/BottomNavigationTextAppearanceInactive"
             app:itemTextColor="?attr/nav_tab_item_color_state"
+            app:labelVisibilityMode="labeled"
+            app:tabGravity="fill"
             app:tabIndicatorColor="@android:color/transparent" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/nav_more_container"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/nav_item_more"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-</FrameLayout>
+            <ImageView
+                android:id="@+id/menu_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:layout_marginTop="9.5dp"
+                app:tint="?attr/material_theme_secondary_color"
+                app:srcCompat="@drawable/ic_menu_themed_24dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="2dp"
+                android:textAlignment="center"
+                android:text="@string/nav_item_more"
+                android:textColor="?attr/material_theme_de_emphasised_color"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

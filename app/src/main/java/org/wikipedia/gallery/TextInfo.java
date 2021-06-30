@@ -1,15 +1,14 @@
 package org.wikipedia.gallery;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 public class TextInfo implements Serializable {
-    @SuppressWarnings("unused,NullableProblems") @Nullable
-    private String html;
+    @SuppressWarnings("unused,NullableProblems") @Nullable private String html;
     @SuppressWarnings("unused,NullableProblems") @Nullable private String text;
     @SuppressWarnings("unused,NullableProblems") @Nullable private String lang;
 

@@ -7,34 +7,36 @@ import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.lang3.StringUtils;
 import org.wikipedia.dataclient.WikiSite;
-import org.wikipedia.gallery.ImageInfo;
-import org.wikipedia.gallery.VideoInfo;
+import org.wikipedia.dataclient.page.Protection;
 import org.wikipedia.json.PostProcessingTypeAdapter;
-import org.wikipedia.model.BaseModel;
 import org.wikipedia.notifications.Notification;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.settings.SiteInfo;
+import org.wikipedia.util.DateUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class MwQueryResult extends BaseModel implements PostProcessingTypeAdapter.PostProcessable {
-    @SuppressWarnings("unused") @Nullable private List<MwQueryPage> pages;
-    @SuppressWarnings("unused") @Nullable private List<Redirect> redirects;
-    @SuppressWarnings("unused") @Nullable private List<ConvertedTitle> converted;
-    @SuppressWarnings("unused") @SerializedName("userinfo") private UserInfo userInfo;
-    @SuppressWarnings("unused") @Nullable private List<ListUserResponse> users;
-    @SuppressWarnings("unused") @Nullable private Tokens tokens;
-    @SuppressWarnings("unused,NullableProblems") @SerializedName("authmanagerinfo")
-    @Nullable private MwAuthManagerInfo amInfo;
-    @SuppressWarnings("unused") @Nullable private MarkReadResponse echomarkread;
-    @SuppressWarnings("unused") @Nullable private MarkReadResponse echomarkseen;
-    @SuppressWarnings("unused,NullableProblems") @Nullable private NotificationList notifications;
+@SuppressWarnings("unused")
+public class MwQueryResult implements PostProcessingTypeAdapter.PostProcessable {
+    @Nullable private List<MwQueryPage> pages;
+    @Nullable private List<Redirect> redirects;
+    @Nullable private List<ConvertedTitle> converted;
+    @SerializedName("userinfo") private UserInfo userInfo;
+    @Nullable private List<ListUserResponse> users;
+    @Nullable private Tokens tokens;
+    @SerializedName("authmanagerinfo") @Nullable private MwAuthManagerInfo amInfo;
+    @Nullable private MarkReadResponse echomarkread;
+    @Nullable private MarkReadResponse echomarkseen;
+    @Nullable private NotificationList notifications;
     @Nullable private Map<String, Notification.UnreadNotificationWikiItem> unreadnotificationpages;
-    @SuppressWarnings("unused") @SerializedName("general")
-    @Nullable private SiteInfo generalSiteInfo;
+    @SerializedName("general") @Nullable private SiteInfo generalSiteInfo;
+    @SerializedName("wikimediaeditortaskscounts") @Nullable private EditorTaskCounts editorTaskCounts;
+    @Nullable private List<WatchlistItem> watchlist;
+    @SerializedName("usercontribs") @Nullable private List<UserContribution> userContributions;
 
     @Nullable public List<MwQueryPage> pages() {
         return pages;
@@ -53,6 +55,10 @@ public class MwQueryResult extends BaseModel implements PostProcessingTypeAdapte
 
     @Nullable public String csrfToken() {
         return tokens != null ? tokens.csrf() : null;
+    }
+
+    @Nullable public String watchToken() {
+        return  tokens != null ? tokens.watch() : null;
     }
 
     @Nullable public String createAccountToken() {
@@ -99,30 +105,6 @@ public class MwQueryResult extends BaseModel implements PostProcessingTypeAdapte
         return null;
     }
 
-    @NonNull public Map<String, ImageInfo> images() {
-        Map<String, ImageInfo> result = new HashMap<>();
-        if (pages != null) {
-            for (MwQueryPage page : pages) {
-                if (page.imageInfo() != null) {
-                    result.put(page.title(), page.imageInfo());
-                }
-            }
-        }
-        return result;
-    }
-
-    @NonNull public Map<String, VideoInfo> videos() {
-        Map<String, VideoInfo> result = new HashMap<>();
-        if (pages != null) {
-            for (MwQueryPage page : pages) {
-                if (page.videoInfo() != null) {
-                    result.put(page.title(), page.videoInfo());
-                }
-            }
-        }
-        return result;
-    }
-
     @NonNull public List<PageTitle> langLinks() {
         List<PageTitle> result = new ArrayList<>();
         if (pages == null || pages.isEmpty() || pages.get(0).langLinks() == null) {
@@ -136,21 +118,32 @@ public class MwQueryResult extends BaseModel implements PostProcessingTypeAdapte
         return result;
     }
 
-    @NonNull public List<NearbyPage> nearbyPages(@NonNull WikiSite wiki) {
-        List<NearbyPage> result = new ArrayList<>();
-        if (pages != null) {
-            for (MwQueryPage page : pages) {
-                NearbyPage nearbyPage = new NearbyPage(page, wiki);
-                if (nearbyPage.getLocation() != null) {
-                    result.add(nearbyPage);
-                }
-            }
-        }
-        return result;
-    }
-
     @Nullable public SiteInfo siteInfo() {
         return generalSiteInfo;
+    }
+
+    @Nullable public EditorTaskCounts editorTaskCounts() {
+        return editorTaskCounts;
+    }
+
+    @NonNull public List<UserContribution> userContributions() {
+        return userContributions != null ? userContributions : Collections.emptyList();
+    }
+
+    @NonNull public List<WatchlistItem> getWatchlist() {
+        return watchlist != null ? watchlist : Collections.emptyList();
+    }
+
+    public boolean isEditProtected() {
+        if (firstPage() == null || userInfo() == null) {
+            return false;
+        }
+        for (Protection protection : firstPage().protection()) {
+            if (protection.getType().equals("edit") && !userInfo().getGroups().contains(protection.getLevel())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -181,9 +174,7 @@ public class MwQueryResult extends BaseModel implements PostProcessingTypeAdapte
         if (converted == null || pages == null) {
             return;
         }
-        // noinspection ConstantConditions
         for (MwQueryResult.ConvertedTitle convertedTitle : converted) {
-            // noinspection ConstantConditions
             for (MwQueryPage page : pages) {
                 if (page.title().equals(convertedTitle.to())) {
                     page.convertedFrom(convertedTitle.from());
@@ -232,9 +223,14 @@ public class MwQueryResult extends BaseModel implements PostProcessingTypeAdapte
         @Nullable private String createAccount;
         @SuppressWarnings("unused,NullableProblems") @SerializedName("logintoken")
         @Nullable private String login;
+        @SuppressWarnings("unused,NullableProblems") @SerializedName("watchtoken")
+        @Nullable private String watch;
 
         @Nullable private String csrf() {
             return csrf;
+        }
+        @Nullable private String watch() {
+            return watch;
         }
 
         @Nullable private String createAccount() {
@@ -280,6 +276,74 @@ public class MwQueryResult extends BaseModel implements PostProcessingTypeAdapte
 
         @Nullable public Notification.SeenTime getSeenTime() {
             return seenTime;
+        }
+    }
+
+    public static class WatchlistItem {
+        private int pageid;
+        private long revid;
+        @SerializedName("old_revid") private long oldRevid;
+        private int ns;
+        @Nullable private String title;
+        @Nullable private String user;
+        @Nullable private String timestamp;
+        @Nullable private String comment;
+        @Nullable private String parsedcomment;
+        @Nullable private String logtype;
+        private boolean anon;
+        private boolean bot;
+        @SerializedName("new") private boolean isNew;
+        private boolean minor;
+        private int oldlen;
+        private int newlen;
+        private WikiSite wiki;
+
+        public int getNs() {
+            return ns;
+        }
+
+        @NonNull public String getTitle() {
+            return StringUtils.defaultString(title);
+        }
+
+        @NonNull public String getLogType() {
+            return StringUtils.defaultString(logtype);
+        }
+
+        @NonNull public Date getDate() {
+            return DateUtil.iso8601DateParse(StringUtils.defaultString(timestamp));
+        }
+
+        @NonNull public String getParsedComment() {
+            return StringUtils.defaultString(parsedcomment);
+        }
+
+        public void setWiki(WikiSite wiki) {
+            this.wiki = wiki;
+        }
+
+        public WikiSite getWiki() {
+            return wiki;
+        }
+
+        @NonNull public String getUser() {
+            return StringUtils.defaultString(user);
+        }
+
+        public int getOldlen() {
+            return oldlen;
+        }
+
+        public int getNewlen() {
+            return newlen;
+        }
+
+        public boolean isAnon() {
+            return anon;
+        }
+
+        public long getRevid() {
+            return revid;
         }
     }
 }

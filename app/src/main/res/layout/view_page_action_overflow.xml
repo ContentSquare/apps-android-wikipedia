@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<org.wikipedia.views.WikiCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/page_action_overflow_card_container"
+    android:id="@+id/overflow_card_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="-2dp"
@@ -12,71 +11,67 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="?attr/material_theme_border_color"
-        android:showDividers="middle"
-        android:divider="?attr/list_separator_drawable"
-        android:minWidth="160dp">
+        android:background="?attr/paper_color"
+        android:minWidth="180dp"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/overflow_forward"
             style="@style/OverflowMenuItem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="13dp"
-            android:paddingBottom="13dp"
-            android:background="?attr/paper_color"
-            android:paddingLeft="0dp"
-            android:gravity="center_vertical">
+            android:drawablePadding="16dp"
+            android:text="@string/nav_item_forward"
+            app:drawableStartCompat="@drawable/ic_arrow_forward_black_24dp"
+            app:drawableTint="?attr/material_theme_secondary_color" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/page_action_overflow_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:contentDescription="@string/nav_item_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_arrow_back_themed_24dp"
-                app:tint="?attr/page_toolbar_icon_color"/>
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/page_action_overflow_forward"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:contentDescription="@string/nav_item_forward"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_arrow_forward_black_24dp"
-                app:tint="?attr/page_toolbar_icon_color"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/overflow_share"
+            style="@style/OverflowMenuItem"
+            android:drawablePadding="16dp"
+            android:text="@string/menu_page_share"
+            app:drawableStartCompat="@drawable/ic_share"
+            app:drawableTint="?attr/material_theme_secondary_color" />
 
-        </LinearLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/overflow_watchlist"
+            style="@style/OverflowMenuItem"
+            android:drawablePadding="16dp"
+            android:text="@string/menu_page_add_to_watchlist"
+            app:drawableStartCompat="@drawable/ic_baseline_star_outline_24"
+            app:drawableTint="?attr/material_theme_secondary_color" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:background="?attr/paper_color">
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/overflow_talk"
+            style="@style/OverflowMenuItem"
+            android:drawablePadding="16dp"
+            android:text="@string/menu_page_view_talk"
+            app:drawableStartCompat="@drawable/ic_icon_speech_bubbles_ooui_ltr"
+            app:drawableTint="?attr/material_theme_secondary_color" />
 
-            <TextView
-                android:id="@+id/page_action_overflow_open_a_new_tab"
-                style="@style/OverflowMenuItem"
-                android:text="@string/menu_page_open_a_new_tab"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/overflow_edit_history"
+            style="@style/OverflowMenuItem"
+            android:drawablePadding="16dp"
+            android:text="@string/menu_page_view_edit_history"
+            app:drawableEndCompat="@drawable/ic_open_in_new_black_24px"
+            app:drawableStartCompat="@drawable/ic_icon_revision_history_apps"
+            app:drawableTint="?attr/material_theme_secondary_color" />
 
-            <TextView
-                android:id="@+id/page_action_overflow_reading_lists"
-                style="@style/OverflowMenuItem"
-                android:text="@string/menu_page_reading_lists"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/overflow_new_tab"
+            style="@style/OverflowMenuItem"
+            android:drawablePadding="16dp"
+            android:text="@string/menu_new_tab"
+            app:drawableStartCompat="@drawable/ic_add_gray_white_24dp"
+            app:drawableTint="?attr/material_theme_secondary_color" />
 
-            <TextView
-                android:id="@+id/page_action_overflow_recently_viewed"
-                style="@style/OverflowMenuItem"
-                android:text="@string/menu_page_recently_viewed"/>
-
-        </LinearLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/overflow_feed"
+            style="@style/OverflowMenuItem"
+            android:drawablePadding="16dp"
+            android:text="@string/feed"
+            app:drawableStartCompat="@drawable/ic_globe"
+            app:drawableTint="?attr/material_theme_secondary_color" />
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</org.wikipedia.views.WikiCardView>

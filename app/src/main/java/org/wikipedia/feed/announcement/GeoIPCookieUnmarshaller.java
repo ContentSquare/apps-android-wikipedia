@@ -1,10 +1,11 @@
 package org.wikipedia.feed.announcement;
 
 import android.location.Location;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import android.text.TextUtils;
 
 import org.wikipedia.dataclient.SharedPreferenceCookieManager;
 

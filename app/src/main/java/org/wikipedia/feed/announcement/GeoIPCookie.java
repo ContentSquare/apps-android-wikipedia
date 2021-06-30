@@ -1,6 +1,7 @@
 package org.wikipedia.feed.announcement;
 
 import android.location.Location;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 

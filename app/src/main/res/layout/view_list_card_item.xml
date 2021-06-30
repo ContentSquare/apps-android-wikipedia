@@ -1,61 +1,88 @@
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
-    tools:layout_width="match_parent"
     tools:layout_height="wrap_content"
+    tools:layout_width="match_parent"
+    tools:paddingBottom="16dp"
     tools:paddingTop="16dp"
-    tools:paddingBottom="16dp">
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <com.facebook.drawee.view.SimpleDraweeView
-        style="@style/SimpleDraweeViewPlaceholder.Article"
-        android:id="@+id/view_list_card_item_image"
-        android:layout_width="@dimen/view_list_card_item_image"
-        android:layout_height="@dimen/view_list_card_item_image"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
+    <org.wikipedia.feed.view.GradientCircleNumberView
+        android:id="@+id/view_list_card_number"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="2dp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:roundedCornerRadius="2dp"
-        app:backgroundImage="@color/base100" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/view_list_card_item_title"
-        style="@style/MaterialListTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/view_list_card_item_subtitle"
-        app:layout_constraintEnd_toStartOf="@+id/view_list_card_item_menu"
-        app:layout_constraintStart_toEndOf="@+id/view_list_card_item_image"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="?attr/primary_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:lineSpacingExtra="5sp"
+        android:transitionName="@string/transition_article_title"
+        app:layout_constraintEnd_toStartOf="@+id/view_list_card_item_image"
+        app:layout_constraintStart_toEndOf="@+id/view_list_card_number"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Lorem ipsum" />
 
     <org.wikipedia.views.GoneIfEmptyTextView
         android:id="@+id/view_list_card_item_subtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="@+id/view_list_card_item_title"
+        android:layout_marginTop="3dp"
+        android:textColor="?attr/primary_text_color"
+        android:textSize="16sp"
+        android:lineSpacingExtra="5sp"
+        android:transitionName="@string/transition_article_description"
         app:layout_constraintEnd_toEndOf="@+id/view_list_card_item_title"
+        app:layout_constraintStart_toStartOf="@+id/view_list_card_item_title"
         app:layout_constraintTop_toBottomOf="@+id/view_list_card_item_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/MaterialListSubtitle"
-        tools:text="Lorem ipsum"/>
+        tools:text="Lorem ipsum" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/view_list_card_item_menu"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintTop_toTopOf="@+id/view_list_card_item_title"
+    <org.wikipedia.views.GraphView
+        android:id="@+id/view_list_card_item_graph"
+        android:layout_width="54dp"
+        android:layout_height="13dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:scaleY="-1"
+        app:layout_constraintStart_toStartOf="@+id/view_list_card_item_title"
+        app:layout_constraintTop_toBottomOf="@id/view_list_card_item_subtitle"
+        tools:text="Lorem ipsum" />
+
+    <TextView
+        android:id="@+id/view_list_card_item_pageviews"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
+        android:textStyle="normal"
+        android:textColor="@color/green50"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@+id/view_list_card_item_graph"
+        app:layout_constraintTop_toBottomOf="@id/view_list_card_item_subtitle"
+        tools:text="Lorem ipsum" />
+
+    <ImageView
+        android:id="@+id/view_list_card_item_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:transitionName="@string/transition_article_image"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_more_vert_white_24dp"
-        app:tint="?attr/material_theme_de_emphasised_color"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/abc_action_menu_overflow_description"
-        tools:visibility="visible"/>
+        app:layout_constraintStart_toEndOf="@+id/view_list_card_item_title"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@null"/>
 
 </merge>

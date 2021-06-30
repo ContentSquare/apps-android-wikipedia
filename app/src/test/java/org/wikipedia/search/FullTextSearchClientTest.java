@@ -6,8 +6,7 @@ import org.junit.Test;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.test.MockRetrofitTest;
 
-import io.reactivex.Observable;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.rxjava3.core.Observable;
 
 public class FullTextSearchClientTest extends MockRetrofitTest {
     private static final WikiSite TESTWIKI = new WikiSite("test.wikimedia.org");
@@ -16,10 +15,10 @@ public class FullTextSearchClientTest extends MockRetrofitTest {
     private Observable<SearchResults> getObservable() {
         return getApiService().fullTextSearch("foo", BATCH_SIZE, null, null)
                 .map(response -> {
-                    if (response.success()) {
+                    if (response.getQuery() != null) {
                         // noinspection ConstantConditions
-                        return new SearchResults(response.query().pages(), TESTWIKI,
-                                response.continuation(), null);
+                        return new SearchResults(response.getQuery().pages(), TESTWIKI,
+                                response.getContinuation(), null);
                     }
                     return new SearchResults();
                 });
@@ -27,54 +26,42 @@ public class FullTextSearchClientTest extends MockRetrofitTest {
 
     @Test public void testRequestSuccessNoContinuation() throws Throwable {
         enqueueFromFile("full_text_search_results.json");
-        TestObserver<SearchResults> observer = new TestObserver<>();
-        getObservable().subscribe(observer);
-
-        observer.assertComplete().assertNoErrors()
+        getObservable().test().await()
+                .assertComplete().assertNoErrors()
                 .assertValue(result -> result.getResults().get(0).getPageTitle().getDisplayText().equals("IND Queens Boulevard Line"));
 
     }
 
     @Test public void testRequestSuccessWithContinuation() throws Throwable {
         enqueueFromFile("full_text_search_results.json");
-        TestObserver<SearchResults> observer = new TestObserver<>();
-        getObservable().subscribe(observer);
-
-        observer.assertComplete().assertNoErrors()
+        getObservable().test().await()
+                .assertComplete().assertNoErrors()
                 .assertValue(result -> result.getContinuation().get("continue").equals("gsroffset||")
                         && result.getContinuation().get("gsroffset").equals("20"));
     }
 
     @Test public void testRequestSuccessNoResults() throws Throwable {
         enqueueFromFile("full_text_search_results_empty.json");
-        TestObserver<SearchResults> observer = new TestObserver<>();
-        getObservable().subscribe(observer);
-
-        observer.assertComplete().assertNoErrors()
+        getObservable().test().await()
+                .assertComplete().assertNoErrors()
                 .assertValue(result -> result.getResults().isEmpty());
     }
 
     @Test public void testRequestResponseApiError() throws Throwable {
         enqueueFromFile("api_error.json");
-        TestObserver<SearchResults> observer = new TestObserver<>();
-        getObservable().subscribe(observer);
-
-        observer.assertError(Exception.class);
+        getObservable().test().await()
+                .assertError(Exception.class);
     }
 
     @Test public void testRequestResponseFailure() throws Throwable {
         enqueue404();
-        TestObserver<SearchResults> observer = new TestObserver<>();
-        getObservable().subscribe(observer);
-
-        observer.assertError(Exception.class);
+        getObservable().test().await()
+                .assertError(Exception.class);
     }
 
     @Test public void testRequestResponseMalformed() throws Throwable {
-        server().enqueue("'");
-        TestObserver<SearchResults> observer = new TestObserver<>();
-        getObservable().subscribe(observer);
-
-        observer.assertError(MalformedJsonException.class);
+        enqueueMalformed();
+        getObservable().test().await()
+                .assertError(MalformedJsonException.class);
     }
 }

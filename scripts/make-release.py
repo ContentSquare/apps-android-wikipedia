@@ -5,7 +5,7 @@ Script that builds one or more release apks.
 Does the following things in several steps:
 
 Step 1: (e.g., --beta):
-    - Runs the selected (clean) Gradle builds (e.g. beta, amazon, or prod)
+    - Runs the selected (clean) Gradle builds (e.g. beta, prod, custom)
 
 Step 2: (e.g., --beta --push):
     - Creates an annotated tag called 'releases/versionName'
@@ -14,15 +14,15 @@ Step 2: (e.g., --beta --push):
 
 To run
 1) tell people on #wikimedia-mobile you're about to bump the version,
-   so hold off on merging to master
-2) git checkout master
+   so hold off on merging to main
+2) git checkout main
 3) git pull
 4) git reset --hard
 5) python scripts/make-release.py --prod
 Note: the apk file locations are printed to stdout
 6) manual step: test the apk(s): adb install -r <apk file>
 7) python scripts/make-release.py --prod --push
-8) compile release note of prod using (replace "r/*" with "beta/*" or "amazon/*")
+8) compile release note of prod using
     git log --pretty=format:"%h | %cr | %s" --abbrev-commit --no-merges `git tag -l r/*|tail -1`..
 9) Upload prod apk to Play Store and to releases.mediawiki.org
 
@@ -77,7 +77,6 @@ def git_push_tag(target, version_name):
 
 def make_release(flavors, custom_channel):
     sh.cd(PATH_PREFIX)
-    # ./gradlew -q assembleDevDebug
     args = [GRADLEW,
             '-q',
             'clean',
@@ -86,20 +85,22 @@ def make_release(flavors, custom_channel):
     args += tasks
     subprocess.call(args)
 
+def make_bundle(flavors, custom_channel):
+    sh.cd(PATH_PREFIX)
+    args = [GRADLEW,
+            '-q',
+            'clean',
+            '-PcustomChannel=' + custom_channel]
+    tasks = ['bundle{0}Release'.format(flavor.title()) for flavor in flavors]
+    args += tasks
+    subprocess.call(args)
 
-def copy_artifacts(flavor):
-    folder_path = 'releases'
-    sh.mkdir("-p", folder_path)
-    version_name = get_version_name_from_apk(get_output_apk_file_name(flavor, 'universal'))
-    copy_apk(flavor, version_name, 'universal')
-    copy_apk(flavor, version_name, 'armeabi-v7a')
-    copy_apk(flavor, version_name, 'arm64-v8a')
-    copy_apk(flavor, version_name, 'x86')
-    copy_apk(flavor, version_name, 'x86_64')
 
+def get_output_apk_file_name(flavor):
+    return 'app/build/outputs/apk/' + flavor + '/release/app-' + flavor + '-release.apk'
 
-def get_output_apk_file_name(flavor, abi):
-    return 'app/build/outputs/apk/' + flavor + '/release/app-' + flavor + '-' + abi + '-release.apk'
+def get_output_bundle_file_name(flavor):
+    return 'app/build/outputs/bundle/' + flavor + 'Release/app-' + flavor + '-release.aab'
 
 
 def get_android_home():
@@ -140,17 +141,24 @@ def get_version_name_from_apk(apk_file):
         sys.exit("Could not get version name from apk " + apk_file)
 
 
-def copy_apk(flavor, version_name, abi):
+def copy_apk(flavor, version_name):
     folder_path = 'releases'
     sh.mkdir("-p", folder_path)
-    output_file = '%s/wikipedia-%s-%s.apk' % (folder_path, version_name, abi)
-    sh.cp(get_output_apk_file_name(flavor, abi), output_file)
+    output_file = '%s/wikipedia-%s.apk' % (folder_path, version_name)
+    sh.cp(get_output_apk_file_name(flavor), output_file)
+    print ' apk: %s' % output_file
+
+def copy_bundle(flavor, version_name):
+    folder_path = 'releases'
+    sh.mkdir("-p", folder_path)
+    output_file = '%s/wikipedia-%s.aab' % (folder_path, version_name)
+    sh.cp(get_output_bundle_file_name(flavor), output_file)
     print ' apk: %s' % output_file
 
 
 def find_output_apk_for(label, version_code):
     folder_path = 'releases'
-    file_pattern = '%s/wikipedia-%s.%s-%s-*universal.apk' % (folder_path, VERSION_START, version_code, label)
+    file_pattern = '%s/wikipedia-%s.%s-%s-*.apk' % (folder_path, VERSION_START, version_code, label)
     apk_files = glob.glob(file_pattern)
     if len(apk_files) == 1:
         return apk_files[0]
@@ -172,9 +180,6 @@ def main():
     group.add_argument('--prod',
                        help='Step 1: Google Play stable.',
                        action='store_true')
-    group.add_argument('--amazon',
-                       help='Step 1: Amazon stable release.',
-                       action='store_true')
     group.add_argument('--channel',
                        help='Step 1: Custom versionName&channel. OEMs w/ Play')
     group.add_argument('--app',
@@ -192,9 +197,6 @@ def main():
     elif args.prod:
         flavors = ['prod']
         targets = ['r']
-    elif args.amazon:
-        flavors = ['amazon']
-        targets = flavors
     elif args.channel:
         flavors = ['custom']
         targets = [args.channel]
@@ -204,7 +206,7 @@ def main():
         targets = [args.app]
         custom_channel = args.app
     else:
-        print('Error. Please specify --beta, --prod, or --amazon')
+        print('Error. Please specify --beta, --prod, etc.')
         sys.exit(-1)
 
     if args.push:
@@ -218,8 +220,20 @@ def main():
             git_tag(target, version_name)
             git_push_tag(target, version_name)
     else:
+        folder_path = 'releases'
+        sh.mkdir("-p", folder_path)
+
+        print('Building APK...')
         make_release(flavors, custom_channel)
-        copy_artifacts(flavors[0])
+        version_name = get_version_name_from_apk(get_output_apk_file_name(flavors[0]))
+        print('Copying APK...')
+        copy_apk(flavors[0], version_name)
+
+        print('Building bundle...')
+        make_bundle(flavors, custom_channel)
+        print('Copying bundle...')
+        copy_bundle(flavors[0], version_name)
+
         print('Please test the APK. After that, run w/ --push flag, and release the tested APK.')
         print('A useful command for collecting the release notes:')
         print('git log --pretty=format:"%h | %cr | %s" --abbrev-commit --no-merges ' +

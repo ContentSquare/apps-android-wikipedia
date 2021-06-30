@@ -20,13 +20,9 @@ NORWEGIAN_BOKMAL_LANG = "nb"
 
 # Wikis that cause problems and hence we pretend
 # do not exist.
-# - "got" -> Gothic runes wiki. The name of got in got
-#   contains characters outside the Unicode BMP. Android
-#   hard crashes on these. Let's ignore these fellas
-#   for now.
 # - "mo" -> Moldovan, which automatically redirects to Romanian (ro),
 #   which already exists in our list.
-OSTRICH_WIKIS = [u"got", "mo"]
+OSTRICH_WIKIS = ["mo"]
 
 
 # Represents a single wiki, along with arbitrary properties of that wiki
@@ -53,8 +49,9 @@ class WikiList(object):
         }
         data.update(kwargs)
         rendered = self.template_env.get_template(template).render(**data)
-        out = codecs.open(class_name + u".java", u"w", u"utf-8")
+        out = codecs.open(u"../app/src/main/java/org/wikipedia/staticdata/" + class_name + u".kt", u"w", u"utf-8")
         out.write(rendered)
+        out.write("\n")
         out.close()
 
 
@@ -130,14 +127,20 @@ def postprocess_wikis(wiki_list):
 # Populate the aliases for "Special:" and "File:" in all wikis
 def populate_aliases(wikis):
     for wiki in wikis.wikis:
-        print(u"Fetching Special Page and File alias for %s" % wiki.lang)
+        print(u"Fetching namespace strings for %s" % wiki.lang)
         url = u"https://%s.wikipedia.org/w/api.php" % wiki.lang + \
               u"?action=query&meta=siteinfo&format=json&siprop=namespaces"
         data = json.loads(requests.get(url).text)
         # according to https://www.mediawiki.org/wiki/Manual:Namespace
         # -1 seems to be the ID for Special Pages
         wiki.props[u"special_alias"] = data[u"query"][u"namespaces"][u"-1"][u"*"]
-        # 6 is the ID for File pages
+        # Namespace 1: Talk
+        wiki.props[u"talk_alias"] = data[u"query"][u"namespaces"][u"1"][u"*"]
+        # Namespace 2: User
+        wiki.props[u"user_alias"] = data[u"query"][u"namespaces"][u"2"][u"*"]
+        # Namespace 3: User talk
+        wiki.props[u"user_talk_alias"] = data[u"query"][u"namespaces"][u"3"][u"*"]
+        # Namespace 6: File
         wiki.props[u"file_alias"] = data[u"query"][u"namespaces"][u"6"][u"*"]
     return wikis
 
@@ -177,7 +180,10 @@ chain(
     populate_aliases,
     populate_main_pages,
     postprocess_wikis,
-    render_template(u"basichash.java.jinja", u"SpecialAliasData", key=u"special_alias"),
-    render_template(u"basichash.java.jinja", u"FileAliasData", key=u"file_alias"),
-    render_template(u"basichash.java.jinja", u"MainPageNameData", key=u"main_page_name"),
+    render_template(u"basichash.kt.jinja", u"SpecialAliasData", key=u"special_alias"),
+    render_template(u"basichash.kt.jinja", u"FileAliasData", key=u"file_alias"),
+    render_template(u"basichash.kt.jinja", u"TalkAliasData", key=u"talk_alias"),
+    render_template(u"basichash.kt.jinja", u"UserAliasData", key=u"user_alias"),
+    render_template(u"basichash.kt.jinja", u"UserTalkAliasData", key=u"user_talk_alias"),
+    render_template(u"basichash.kt.jinja", u"MainPageNameData", key=u"main_page_name"),
 )

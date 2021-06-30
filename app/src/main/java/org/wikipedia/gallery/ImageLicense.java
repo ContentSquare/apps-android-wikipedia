@@ -1,6 +1,7 @@
 package org.wikipedia.gallery;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -9,26 +10,24 @@ import org.wikipedia.R;
 import java.io.Serializable;
 import java.util.Locale;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 
 public class ImageLicense implements Serializable {
     private static final String CREATIVE_COMMONS_PREFIX = "cc";
     private static final String PUBLIC_DOMAIN_PREFIX = "pd";
     private static final String CC_BY_SA = "ccbysa";
 
-    @NonNull
-    @SerializedName("type") private final String license;
+    @NonNull @SerializedName("type") private final String license;
     @NonNull @SerializedName("code") private final String licenseShortName;
     @NonNull @SerializedName("url") private final String licenseUrl;
 
     public ImageLicense(@NonNull ExtMetadata metadata) {
-        this.license = metadata.license() != null ? metadata.license().value() : "";
-        this.licenseShortName = metadata.licenseShortName() != null ? metadata.licenseShortName().value() : "";
-        this.licenseUrl = metadata.licenseUrl() != null ? metadata.licenseUrl().value() : "";
+        this.license = metadata.license();
+        this.licenseShortName = metadata.licenseShortName();
+        this.licenseUrl = metadata.licenseUrl();
     }
 
-    private ImageLicense(@NonNull String license, @NonNull String licenseShortName, @NonNull String licenseUrl) {
+    public ImageLicense(@NonNull String license, @NonNull String licenseShortName, @NonNull String licenseUrl) {
         this.license = license;
         this.licenseShortName = licenseShortName;
         this.licenseUrl = licenseUrl;
@@ -69,8 +68,7 @@ public class ImageLicense implements Serializable {
      * under which the specified Gallery item is provided.
      * @return Resource ID of the icon to display.
      */
-    @DrawableRes
-    public int getLicenseIcon() {
+    @DrawableRes public int getLicenseIcon() {
         if (isLicensePD()) {
             return R.drawable.ic_license_pd;
         }

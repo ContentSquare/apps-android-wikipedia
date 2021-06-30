@@ -5,9 +5,13 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.ListView
+import kotlin.math.abs
 
-class SwipeableListView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : ListView(context, attrs, defStyle) {
+class SwipeableListView constructor(context: Context, attrs: AttributeSet? = null) : ListView(context, attrs) {
+
+    fun interface OnSwipeOutListener {
+        fun onSwipeOut()
+    }
 
     var listener: OnSwipeOutListener? = null
     var rtl: Boolean = false
@@ -16,10 +20,6 @@ class SwipeableListView @JvmOverloads constructor(
         // use GestureDetector to take over the onTouchEvent
         val gestureDetector = GestureDetector(context, ViewGestureListener())
         setOnTouchListener { _, motionEvent -> gestureDetector.onTouchEvent(motionEvent) }
-    }
-
-    interface OnSwipeOutListener {
-        fun onSwipeOut()
     }
 
     private fun swipeDetected(event1: MotionEvent, event2: MotionEvent): Boolean {
@@ -34,8 +34,8 @@ class SwipeableListView @JvmOverloads constructor(
 
         override fun onFling(event1: MotionEvent, event2: MotionEvent,
                              velocityX: Float, velocityY: Float): Boolean {
-            if (swipeDetected(event1, event2) && Math.abs(velocityX) > SWIPE_MIN_X_VELOCITY
-                    && Math.abs(velocityY) < SWIPE_MAX_Y_VELOCITY) {
+            if (swipeDetected(event1, event2) && abs(velocityX) > SWIPE_MIN_X_VELOCITY &&
+                    abs(velocityY) < SWIPE_MAX_Y_VELOCITY) {
                 listener?.onSwipeOut()
             }
             return false

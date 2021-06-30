@@ -27,7 +27,9 @@ public class StringUtilTest {
     @Test
     public void testListToCsv() {
         List<String> stringList = new ArrayList<>();
+        assertThat(StringUtil.listToCsv(stringList), is(""));
         stringList.add("one");
+        assertThat(StringUtil.listToCsv(stringList), is("one"));
         stringList.add("two");
         assertThat(StringUtil.listToCsv(stringList), is("one,two"));
     }
@@ -38,6 +40,8 @@ public class StringUtilTest {
         stringList.add("one");
         stringList.add("two");
         assertThat(StringUtil.csvToList("one,two"), is(stringList));
+        assertThat(StringUtil.csvToList("one").size(), is(1));
+        assertThat(StringUtil.csvToList("").size(), is(0));
     }
 
     @Test
@@ -50,7 +54,9 @@ public class StringUtilTest {
 
     @Test
     public void testMd5string() {
-        assertThat(StringUtil.md5string("test"), is("98f6bcd4621d373cade4e832627b4f6"));
+        assertThat(StringUtil.md5string("test"), is("098f6bcd4621d373cade4e832627b4f6"));
+        assertThat(StringUtil.md5string("https://en.wikipedia.org/api/rest_v1/page/mobile-html/Earth"),
+                is("0f28e0cfe175f17806979dff54cc7ea6"));
     }
 
     @Test
@@ -75,12 +81,6 @@ public class StringUtilTest {
     }
 
     @Test
-    public void testHasSectionAnchor() {
-        assertThat(StringUtil.hasSectionAnchor("te_st"), is(false));
-        assertThat(StringUtil.hasSectionAnchor("#te_st"), is(true));
-    }
-
-    @Test
     public void testRemoveSectionAnchor() {
         assertThat(StringUtil.removeSectionAnchor("#te_st"), is(""));
         assertThat(StringUtil.removeSectionAnchor("sec#te_st"), is("sec"));
@@ -92,8 +92,17 @@ public class StringUtilTest {
     }
 
     @Test
-    public void testSanitizeText() {
-        assertThat(StringUtil.sanitizeText(" [1]  test"), is("test"));
-        assertThat(StringUtil.sanitizeText(" [1]  (;test )"), is("(test )"));
+    public void testRemoveStyleTags() {
+        assertThat(StringUtil.removeStyleTags("Lorem <style data=\"123\">test</style> <i>ipsum</i>"), is("Lorem  <i>ipsum</i>"));
+    }
+
+    @Test
+    public void testRemoveCiteMarkup() {
+        assertThat(StringUtil.removeCiteMarkup("Lorem <cite data=\"123\">test</cite> <i>ipsum</i>"), is("Lorem test <i>ipsum</i>"));
+    }
+
+    @Test
+    public void testSanitizeAbuseFilterCode() {
+        assertThat(StringUtil.sanitizeAbuseFilterCode("⧼abusefilter-warning-selfpublished⧽"), is("abusefilter-warning-selfpublished"));
     }
 }

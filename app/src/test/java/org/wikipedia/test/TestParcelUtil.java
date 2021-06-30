@@ -2,6 +2,7 @@ package org.wikipedia.test;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import static org.hamcrest.MatcherAssert.assertThat;
