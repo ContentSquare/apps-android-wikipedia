@@ -22,6 +22,7 @@
 * Ssola
 * Toniher
 * Unapersona
+* Vfc
 * Xavier Dengra
 -->
 <resources>
@@ -56,6 +57,10 @@
   <string name="app_settings">Configuració de l\'aplicació</string>
   <string name="search_tab_tooltip">Torneu a tocar la icona per a començar a teclejar un terme de cerca.</string>
   <string name="history_list_title">Historial</string>
+  <string name="image_content_description">Imatge: %s</string>
+  <string name="page_content_description">Pàgina: %s</string>
+  <string name="wikimedia_commons">Wikimedia Commons</string>
+  <string name="wikidata">Wikidata</string>
   <string name="dialog_title_clear_history">Esborra l\'historial de navegació</string>
   <string name="dialog_message_clear_history">Això esborrarà tot el vostre historial de navegació i tancarà totes les pestanyes ara obertes. N\'esteu segur?</string>
   <string name="dialog_message_clear_history_yes">Sí</string>
@@ -63,13 +68,21 @@
   <string name="share_via">Comparteix mitjançant…</string>
   <string name="image_share_via">Compareteix amb</string>
   <string name="search_redirect_from">Redirigit des de %s</string>
+  <string name="page_edit_history_activity_title">Historial de revisions: %s</string>
+  <string name="page_edit_history_minor_edit">&lt;b&gt;m&lt;/b&gt; %s</string>
+  <string name="page_edit_history_comment_placeholder">Resum d\'edició buit</string>
+  <string name="page_edit_history_metrics_content_description">Mètriques de %1$s a %2$s</string>
   <string name="menu_page_show_tabs">Mostra les pestanyes</string>
   <string name="menu_page_other_languages">Canvia la llengua</string>
   <string name="menu_page_find_in_page">Cerca a l\'article</string>
   <string name="menu_page_add_to_watchlist">Afegeix a la llista de seguiment</string>
+  <string name="menu_page_watch">Segueix</string>
   <string name="menu_page_view_talk">Mostra la pàgina de discussió</string>
+  <string name="menu_page_talk_page">Pàgina de discussió</string>
   <string name="menu_page_view_edit_history">Mostra l\'historial de modificacions</string>
+  <string name="menu_page_edit_history">Modifica l\'historial</string>
   <string name="menu_page_remove_from_watchlist">Suprimeix de la llista de seguiment</string>
+  <string name="menu_page_watched">Seguida</string>
   <string name="edit_section_find_in_page">Cerca a la pàgina</string>
   <string name="menu_page_font_and_theme">Tipus de lletra i tema</string>
   <string name="menu_page_add_to_list">Afegeix a la llista de lectura</string>
@@ -77,6 +90,8 @@
   <string name="feed_card_add_to_list">Afegeix a la llista de lectura</string>
   <string name="feed_card_add_to_default_list">Desar</string>
   <string name="menu_page_share">Comparteix l\'enllaç</string>
+  <string name="menu_article_share">Comparteix l\'article</string>
+  <string name="menu_page_article_share">Comparteix</string>
   <string name="menu_page_open_a_new_tab">Obre una pestanya nova</string>
   <string name="menu_page_new_tab">Pestanya nova</string>
   <string name="menu_page_reading_lists">Llistes de lectura</string>
@@ -99,9 +114,9 @@
   <string name="edit_save_action_license_anon">En publicar accepteu les &lt;a href=\"%1$s\"&gt;condicions d\'ús&lt;/a&gt; i que alliberareu irrevocablement les vostres contribucions sota la llicència &lt;a href=\"%2$s\"&gt;CC BY-SA 3.0&lt;/a&gt;. Les edicions s\'atribuiran a l\'adreça IP del vostre dispositiu. Si &lt;a href=\"https://#login\"&gt;inicieu una sessió&lt;/a&gt; gaudireu de més privadesa.</string>
   <string name="preference_title_language">Llengües de la Viquipèdia</string>
   <string name="langlinks_filter_hint">Cerca</string>
-  <string name="langlinks_empty">Aquesta pàgina no està disponible en altres idiomes.</string>
+  <string name="langlinks_empty">Aquesta pàgina no està disponible en altres llengües.</string>
   <string name="langlinks_no_match">No s\'ha trobat cap llengua</string>
-  <string name="langlinks_activity_title">Altres idiomes</string>
+  <string name="langlinks_activity_title">Altres llengües</string>
   <string name="langlinks_your_wikipedia_languages">Les vostres llengües de la Viquipèdia</string>
   <string name="menu_save_changes">Publica els canvis</string>
   <string name="edit_saved_successfully">Modificació publicada!</string>
@@ -163,10 +178,11 @@
   <string name="dialog_create_account_checking_progress">S\'està verificant</string>
   <string name="create_account_email_hint">Adreça electrònica (opcional)</string>
   <string name="create_account_password_repeat_hint">Repetiu la contrasenya</string>
+  <string name="create_account_password_is_username">La contrasenya no pot ser igual que el nom d\'usuari</string>
   <string name="create_account_passwords_mismatch_error">Les contrasenyes no coincideixen</string>
   <string name="create_account_email_error">Correu electrònic no vàlid</string>
   <string name="create_account_username_error">Caràcters no vàlids en el nom d\'usuari</string>
-  <string name="create_account_password_error">La contrasenya no és vàlida</string>
+  <string name="create_account_password_error">La contrasenya ha de tenir com a mínim 8 caràcters</string>
   <string name="create_account_generic_error">No s\'ha pogut crear el compte</string>
   <string name="create_account_next">Següent</string>
   <string name="email_recommendation_dialog_title">Voleu crear un compte sense adreça electrònica?</string>
@@ -180,6 +196,7 @@
   <string name="create_account_ip_block_help_url">https://en.wikipedia.org/wiki/Help:I_have_been_blocked</string>
   <string name="create_account_ip_block_details">Detalls</string>
   <string name="preferences_general_heading">General</string>
+  <string name="preferences_account_heading">Compte</string>
   <string name="wikipedia_app_faq">PMF de l\'aplicació de la Viquipèdia</string>
   <string name="send_feedback">Envieu els vostres comentaris sobre l\'aplicació</string>
   <string name="create_account_account_created_toast">S\'ha creat el vostre compte d\'usuari!</string>
@@ -253,6 +270,10 @@
   <string name="edit_summary_tag_other_hint">Altres formes com heu millorat la pàgina</string>
   <string name="edit_conflict_title">Conflicte d\'edició</string>
   <string name="edit_conflict_message">Un altre usuari diferent ja havia modificat la pàgina i entra en conflicte amb la vostra modificació. Copieu les modificacions que heu fet, aneu enrere, refresqueu la pàgina i torneu a modificar la pàgina llavors.</string>
+  <string name="edit_notices">Avisos de modificació</string>
+  <string name="edit_notices_please_read">Llegiu abans de modificar res</string>
+  <string name="edit_notices_show_auto">Mostra els avisos de modificació automàticament</string>
+  <string name="edit_notices_tooltip">Toqueu aquest botó per a mostrar els avisos de notificació d\'aquest article.</string>
   <string name="find_next">Cercar el següent</string>
   <string name="find_previous">Cercar l\'anterior</string>
   <string name="find_first_occurence">Aquesta és la primera ocurrència</string>
@@ -302,6 +323,7 @@
   <string name="gallery_save_success">S’ha desat el fitxer.</string>
   <string name="gallery_error_video_failed">No s\'ha pogut reproduir el vídeo.</string>
   <string name="gallery_save_image_write_permission_rationale">Cal tenir permís d’escriptura en el vostre dispositiu per a poder desar les imatges.</string>
+  <string name="gallery_edit_button_content_description">Modifica la llegenda de la imatge</string>
   <string name="gallery_add_image_caption_button">Afegeix una llegenda a la imatge</string>
   <string name="gallery_add_image_caption_in_language_button">Afegeix una llegenda a la imatge (%s)</string>
   <string name="err_cannot_save_file">No es pot desar el fitxer</string>
@@ -363,6 +385,7 @@
   <string name="error_message_generic">S\'ha produït un error</string>
   <string name="view_link_preview_error_button_dismiss">Descarta</string>
   <string name="error_page_does_not_exist">La pàgina no existeix</string>
+  <string name="error_user_page_does_not_exist">La Viquipèdia no té cap &lt;a href=\"%1$s\"&gt;pàgina d\'usuari&lt;/a&gt; amb aquest nom exacte. En general, la pàgina hauria de ser creada i editada per &lt;b&gt;%2$s&lt;/b&gt;. Si teniu cap dubte, verifiqueu que «%3$s» existeixi.</string>
   <string name="view_wiki_error_message_offline">No es pot connectar a Internet</string>
   <string name="view_wiki_error_message_timeout">No es pot connectar a la Viquipèdia. Comproveu la connexió a la xarxa o torneu-ho a provar més endavant</string>
   <string name="reference_title">Referència %s</string>
@@ -376,12 +399,13 @@
   <string name="menu_save_all_tabs">Desa totes les pestanyes</string>
   <string name="error_blocked_title">S\'ha blocat el vostre nom d\'usuari o adreça IP.</string>
   <string name="error_blocked_by">El blocatge ha estat fet per &lt;a href=\"%2$s\"&gt;%1$s&lt;/a&gt;</string>
-  <string name="error_blocked_reason">El motiu donat: %s</string>
+  <string name="error_blocked_reason">El motiu: %s</string>
   <string name="error_blocked_start">Inici del blocatge: %s</string>
   <string name="error_blocked_expiry">Expiració del blocatge: %s</string>
   <string name="error_blocked_id">ID del blocatge: %s</string>
-  <string name="error_blocked_footer">Podeu contactar &lt;a href=\"%2$s\"&gt;%1$s&lt;/a&gt; o un altre &lt;a href=\"https://ca.wikipedia.org/wiki/Viquipèdia:Administradors\"&gt;administrador&lt;/a&gt; per a discutir el blocatge.</string>
-  <string name="error_blocked_footer_no_blocker">Podeu contactar un &lt;a href=\"https://ca.wikipedia.org/wiki/Viquipèdia:Administradors\"&gt;administrador&lt;/a&gt; per a discutir el blocatge.</string>
+  <string name="error_blocked_footer">Podeu contactar &lt;a href=\"%2$s\"&gt;%1$s&lt;/a&gt; o un altre &lt;a href=\"https://ca.wikipedia.org/wiki/Viquipèdia:Administradors\"&gt;administrador o administradora&lt;/a&gt; per a discutir el blocatge.</string>
+  <string name="theme_chooser_menu_item_tooltip">Personalitzeu la barra d\'eines i proveu el mode de focalització en lectura</string>
+  <string name="error_blocked_footer_no_blocker">Podeu contactar un &lt;a href=\"https://ca.wikipedia.org/wiki/Viquipèdia:Administradors\"&gt; administrador o una administradora&lt;/a&gt; per a discutir el blocatge.</string>
   <string name="crash_report_activity_title">Error de l\'aplicació</string>
   <string name="crash_report_relaunch_or_quit">Ens sap greu, l\'aplicació de Viquipèdia ha experimentat un error i s\'ha tancat.\n\nVoleu començar de nou o sortir?</string>
   <string name="crash_report_relaunch">Comença de nou</string>
@@ -407,6 +431,11 @@
   <string name="text_size_decrease">Redueix la mida del text</string>
   <string name="text_size_percent_default">%s (per defecte)</string>
   <string name="text_style_title">Tipus de lletra</string>
+  <string name="theme_category_reading">Lectura</string>
+  <string name="reading_focus_mode">Mode de focalització en lectura</string>
+  <string name="reading_focus_mode_detail">Amaga les funcionalitats d\'edició i la barra d\'eines inferior en desplaçar-se</string>
+  <string name="theme_category_toolbar">Barra d\'eines</string>
+  <string name="theme_customize_toolbar">Personalitza la barra d\'eines</string>
   <string name="nav_item_saved">Desat</string>
   <string name="reading_list_save_to">Desa a la llista de lectura</string>
   <string name="reading_list_move_to">Mou a la llista de lectura</string>
@@ -535,12 +564,15 @@
   <string name="reading_list_remove_from_offline_cancel_button_text">Cancel·la</string>
   <string name="reading_list_download_using_mobile_data_cancel_button_text">Cancel·la</string>
   <string name="reading_list_split_dialog_ok_button_text">D’acord</string>
+  <string name="reading_list_activity_title">Llista de lectura: %s</string>
   <string name="user_option_sync_label">Preferències</string>
   <string name="notification_reverted_title">Modificació revertida</string>
+  <string name="notification_channel_title">Baixada d\'articles</string>
   <string name="notification_channel_description">Progrés de la baixada</string>
   <string name="notification_syncing_pause_button">Pausa</string>
   <string name="notification_syncing_resume_button">Reprèn</string>
   <string name="notification_syncing_cancel_button">Cancel·la</string>
+  <string name="notification_syncing_reading_list_channel_title">Sincronització de llistes de lectura</string>
   <string name="notification_syncing_reading_list_channel_description">Progrés de sincronització de llistes de lectura</string>
   <string name="notification_many_unread">Teniu %d notificacions per llegir</string>
   <plurals name="notification_channel_name">
@@ -586,6 +618,21 @@
   <string name="notifications_view_archived_button_text">Mostra les notificacions arxivades</string>
   <string name="notification_preferences_title">Preferències de notificació</string>
   <string name="notifications_mark_unread">Marca com a no llegit</string>
+  <string name="notifications_mark_all_as_read">Marca-les totes com llegides</string>
+  <string name="notifications_direct_reply_action">Respon</string>
+  <string name="notifications_direct_reply_progress">S\'està publicant una resposta a %s…</string>
+  <string name="notifications_direct_reply_success">S\'ha publicat la resposta.</string>
+  <string name="notifications_direct_reply_error">No es pot publicar la resposta automàticament.</string>
+  <string name="notifications_mark_all_as_read_message">%d marcades com a llegides</string>
+  <string name="notifications_mark_all_as_unread_message">%d marcades com a no llegides</string>
+  <plurals name="notifications_mark_as_read_plural">
+    <item quantity="one">1 marcada com a llegida</item>
+    <item quantity="other">%d marcades com a llegides</item>
+  </plurals>
+  <plurals name="notifications_mark_as_unread_plural">
+    <item quantity="one">1 marcada com a no llegida</item>
+    <item quantity="other">%d marcada com a no llegides</item>
+  </plurals>
   <string name="watchlist_title">Llista de seguiment</string>
   <string name="preference_title_notification_poll">Activa les notificacions</string>
   <string name="preference_summary_notification_poll">Permet a l\'aplicació utilitzar dades per comprovar si hi ha noves notificacions en segon pla.</string>
@@ -603,7 +650,47 @@
   <string name="preference_title_notification_mention">Menció</string>
   <string name="preference_summary_notification_mention">Algú us menciona en una pàgina</string>
   <string name="preference_title_notification_user_talk">Pàgina de discussió</string>
-  <string name="preference_summary_notification_user_talk">Missatges de pàgines de discussió</string>
+  <string name="preference_summary_notification_user_talk">Missatges i respostes de pàgines de discussió</string>
+  <string name="preference_title_notification_email_user">Rebudes per correu</string>
+  <string name="preference_summary_notification_email_user">Algú us ha enviat un missatge de correu des del wiki</string>
+  <string name="preference_title_notification_user_rights">Canvis dels permisos d\'usuari</string>
+  <string name="preference_summary_notification_user_rights">Rebut quan canvien els vostres permisos d\'usuari</string>
+  <string name="preference_title_notification_article_linked">Enllaços a articles que heu creat</string>
+  <string name="preference_summary_notification_article_linked">Rebut quan es fa un nou enllaç a una pàgina que vau crear</string>
+  <string name="preference_category_push_notifications">Notificacions emergents</string>
+  <string name="preference_title_customize_push_notifications">Personalitza les notificacions emergents</string>
+  <string name="preference_category_display_settings">Configuració de visualització</string>
+  <string name="preference_title_hide_read_notifications">Amaga les notificacions llegides</string>
+  <string name="notifications_channel_group_wikipedia_notifications_title">Viquipèdia</string>
+  <string name="notifications_channel_group_wikipedia_notifications_description">Notificacions de la Viquipèdia</string>
+  <string name="notifications_channel_group_other_title">Altres</string>
+  <string name="notifications_channel_group_other_description">Altres notificacions de l\'aplicació</string>
+  <string name="notifications_filter_label">Filtra les notificacions</string>
+  <string name="notifications_filter_icon_content_description">Filtra les notificacions</string>
+  <string name="notifications_filter_update_app_languages">Actualitza les llengües de l\'aplicació</string>
+  <string name="notifications_empty_search_message">Proveu de suprimir %s per a veure més notificacions</string>
+  <plurals name="notifications_number_of_filters">
+    <item quantity="one">%d filtre</item>
+    <item quantity="other">%d filtres</item>
+  </plurals>
+  <string name="notifications_select_all_filters">Selecciona tots els filtres</string>
+  <string name="notifications_tab_filter_all">Totes</string>
+  <string name="notifications_tab_filter_mentions">Mencions</string>
+  <string name="notifications_tab_filter_unread">(%s)</string>
+  <string name="notifications_search_bar_hint">Cerca o filtra les notificacions</string>
+  <string name="notifications_search_bar_filter_hint">Filtre de notificacions</string>
+  <string name="notifications_menu_mark_as_read">Marca com a llegit</string>
+  <string name="notifications_menu_mark_as_unread">Marca com a no llegit</string>
+  <string name="notifications_swipe_action_read">Llegides</string>
+  <string name="notifications_swipe_action_unread">No llegides</string>
+  <string name="notifications_menu_check_all">Marca tots els elements</string>
+  <string name="notifications_menu_uncheck_all">Desmarca tots els elements</string>
+  <string name="notifications_wiki_filter_header">Filtre wiki</string>
+  <string name="notifications_type_filter_header">Filtre de tipus</string>
+  <string name="notifications_all_wikis_text">Totes les de «wiki»</string>
+  <string name="notifications_all_types_text">Totes les de «tipus»</string>
+  <string name="notifications_menu_user_talk_page">Pàgina de discussió de %s</string>
+  <string name="notifications_offline_disable_message">La funció no és disponible fora de línia.</string>
   <string name="view_because_you_read_card_title">Perquè vau llegir</string>
   <string name="view_random_card_title">A l\'atzar</string>
   <string name="view_random_article_card_title">Article a l\'atzar</string>
@@ -661,6 +748,7 @@
   <string name="feed_accessibility_card_text">Heu arribat al final del canal.</string>
   <string name="feed_accessibility_card_load_more_button">Carrega’n més</string>
   <string name="top_read_activity_title">Els més llegits el %s</string>
+  <string name="tabs_activity_title">Pestanyes</string>
   <string name="description_edit_text_hint">Descripció de l\'article</string>
   <string name="description_edit_article_description_label">Article</string>
   <string name="description_edit_translate_article_description_label_per_language">Descripció de l\'article (%s)</string>
@@ -692,6 +780,7 @@
   <string name="description_starts_with_uppercase">Comenceu amb minúscula a menys que la primera paraula sigui un nom propi.</string>
   <string name="description_starts_with_lowercase">Evita començar per una lletra en minúscula.</string>
   <string name="description_is_in_different_language">El text sembla que estigui en una llengua no esperada. Caldria que fos en %s.</string>
+  <string name="description_verification_notice">Verifiqueu que la vostra descripció és en %1$s. Ignoreu lliurement aquesta notificació si la descripció que heu escrit ja és en %2$s.</string>
   <string name="description_edit_success_saved">S\'ha publicat la descripció d\'article!</string>
   <string name="description_edit_success_saved_snackbar">S’ha publicat la descripció d\'article.</string>
   <string name="description_edit_success_saved_in_lang_snackbar">S\'ha publicat la descripció de l\'article (%s)</string>
@@ -709,6 +798,14 @@
   <string name="description_edit_tutorial_keep_it_short_instructions">Idealment una línia, entre dos o dotze mots</string>
   <string name="description_edit_tutorial_button_label_start_editing">Comença a editar</string>
   <string name="description_edit_tutorial_promise">En començar, prometeu que no fareu mal ús d\'aquesta funcionalitat.</string>
+  <string name="customize_toolbar_title">Personalitza la barra d\'eines</string>
+  <string name="customize_toolbar_description_text">Personalitza la barra d\'eines inferior amb 5 enllaços que trobeu útils.</string>
+  <string name="customize_toolbar_category_toolbar">Barra d\'eines</string>
+  <string name="customize_toolbar_category_menu">Menú</string>
+  <string name="customize_toolbar_drag_and_drop_placeholder">Arrossegueu i deixeu anar els vostres elements preferits ací 👋</string>
+  <string name="customize_toolbar_reset_to_default_button">Reinicialitza als valors per defecte</string>
+  <string name="customize_toolbar_item_drag_handle_default_tooltip">Mantingueu la icona d\'arrossegament per a moure l\'element</string>
+  <string name="customize_toolbar_item_default_tooltip">Premeu i arrossegueu un element per a reposicionar-lo</string>
   <string name="suggested_edits_describe_articles">Descriu articles</string>
   <string name="suggested_edits_caption_images">Posa llegendes a les imatges</string>
   <string name="suggested_edits_tag_images">Etiqueta les imatges</string>
@@ -878,6 +975,7 @@
   <string name="file_page_add_image_caption_button">Afegir una llegenda a la imatge</string>
   <string name="file_page_add_image_tags_button">Afegir una etiqueta a la imatge</string>
   <string name="file_page_suggestion_reason">Motiu del suggeriment</string>
+  <string name="file_page_edit_button_content_description">Edita %s</string>
   <string name="description_edit_revert_subtitle">Gràcies per editar a la Viquipèdia!</string>
   <string name="description_edit_revert_intro">Sabem que heu fet el millor possible, però un dels revisors tenia una precaució. Els motius possibles de la reversió de la modificació poden ser:</string>
   <string name="description_edit_revert_reason1">la vostra contribució no seguia una de les &lt;a href=\"%1$s\"&gt;directrius&lt;/a&gt;.</string>
@@ -893,7 +991,7 @@
   <string name="onboarding_get_started">Primers passos</string>
   <string name="onboarding_maybe_later">Potser més endavant</string>
   <string name="onboarding_explore_title">Noves formes d\'explorar</string>
-  <string name="onboarding_explore_text">Capbussat a l\'univers de la Viquipèdia amb el canal Exploreu actualitzat contínuament. &lt;br/&gt;&lt;b&gt;Personalitza&lt;/b&gt; el canal amb els teus interessos, llegeix sobre els esdeveniments històrics de &lt;b&gt;Un dia com avui&lt;/b&gt; o juga als daus amb l\'&lt;b&gt;Article a l\'atzar&lt;/b&gt;.</string>
+  <string name="onboarding_explore_text">Capbusseu-vos a l\'univers de la Viquipèdia amb el canal d\'actualització contínua «Exploreu». &lt;br/&gt;&lt;b&gt;Personalitzeu&lt;/b&gt; el canal amb els vostres interessos, llegiu sobre els esdeveniments històrics d\'&lt;b&gt;Un dia com avui&lt;/b&gt; o jugueu als daus amb l\'&lt;b&gt;Article a l\'atzar&lt;/b&gt;.</string>
   <string name="onboarding_reading_list_sync_title">Llistes de lectura amb sincronització</string>
   <string name="onboarding_reading_list_sync_text_v2">Podeu fer llistes de lectura d\'articles que voleu llegir més endavant, fins i tot quan sigueu fora de línia. &lt;br/&gt;Inicieu una sessió al vostre compte de Viquipèdia per sincronitzar les llistes de lectura. &lt;a href=\"#login\"&gt;Uniu-vos a la Viquipèdia&lt;/a&gt;</string>
   <string name="onboarding_analytics_title">Envia dades anònimes</string>
@@ -972,6 +1070,7 @@
   <string name="talk_title">Discussió</string>
   <string name="talk_user_title">Discussió: %s</string>
   <string name="talk_new_topic">Tema nou</string>
+  <string name="talk_new_topic_submitted">S\'ha enviat un tema.</string>
   <string name="talk_page_empty">La pàgina de discussió és en blanc.</string>
   <string name="talk_add_reply">Respon</string>
   <string name="talk_no_subject">(sense tema)</string>
@@ -980,18 +1079,51 @@
   <string name="talk_message_hint">Redacta un missatge</string>
   <string name="talk_message_empty">El missatge no pot ser en blanc.</string>
   <string name="talk_subject_empty">El tema no pot ser en blanc.</string>
+  <string name="talk_response_submitted">S\'ha enviat una resposta.</string>
+  <string name="talk_snackbar_undo">Desfés</string>
+  <string name="talk_last_modified">&lt;b&gt;Editat per última vegada %1$s&lt;/b&gt; per %2$s</string>
+  <string name="talk_snackbar_survey_text">Gràcies per utilitzar les pàgines de discussió. Que podríeu ajudar-nos a millor l\'aplicació participant en una enquesta?</string>
+  <string name="talk_snackbar_survey_action_text">Primers passos</string>
+  <string name="talk_share_discussion_subject">Viquipèdia - debat en el tema «%s» de la pàgina de discussió</string>
+  <string name="talk_share_talk_page">Viquipèdia - debats a la pàgina de discussió</string>
+  <string name="talk_edit_disclaimer">Aquesta és una pàgina de discussió. Respecteu les recomanacions de les pàgines de discussió i recordeu signar els vostres apunts amb quatre titlles: ~~~~ en enviar utilitzant wikitext.&lt;br&gt;&lt;br&gt;&lt;a href=\"https://ca.wikipedia.org/wiki/Viquipèdia:Pàgines de discussió\"&gt;Recomanacions de les pàgines de discussió&lt;/a&gt;</string>
+  <string name="talk_search_hint">Cerca en els missatges</string>
+  <string name="talk_overflow_sort_by">Ordena per</string>
+  <string name="talk_overflow_sort_date_published">Data de publicació</string>
+  <string name="talk_overflow_sort_topic_name">Nom del tema</string>
+  <string name="menu_option_share_talk_discussion">Comparteix la discussió</string>
+  <string name="menu_option_share_talk_page">Comparteix la pàgina de discussió</string>
   <string name="menu_option_share_edit">Comparteix l\'edició</string>
   <string name="menu_option_user_profile">Perfil de %s</string>
   <string name="menu_option_user_contributions">Contribucions de %s</string>
+  <string name="menu_option_edit_source">Modifica el codi</string>
   <string name="watchlist_details_watching_label">En seguiment</string>
   <string name="watchlist_details_watch_label">Segueix</string>
+  <string name="watchlist_details_next_edit">Edició següent</string>
+  <string name="watchlist_details_prev_edit">Edició anterior</string>
   <string name="thank_label">Agraeix</string>
-  <string name="go_to_user_page">Vés a la pàgina d\'usuari</string>
+  <string name="view_user_page">Mostra la pàgina d\'usuari</string>
   <string name="thank_dialog_title_text">Envia \'agraïments\' públicament</string>
   <string name="thank_dialog_text">Els \'agraïments\' són una forma fàcil de mostrar apreciació pel treball d\'un editor a la Viquipèdia. Els \'agraïments\' no es poden desfer i són visibles públicament</string>
   <string name="thank_dialog_positive_button_text">Envia agraïments</string>
   <string name="thank_dialog_negative_button_text">Cancel·la</string>
   <string name="thank_success_message">S\'han enviat els agraïments a %s 👍</string>
+  <string name="menu_option_view_user_profile">Mosta la pàgina de perfil d\'usuari</string>
+  <string name="menu_option_view_user_talk">Mosta la pàgina de discussió</string>
+  <string name="menu_option_view_user_contributions">Mostra les contribucions de l\'usuari</string>
+  <string name="revision_diff_compare">Compara les revisions</string>
+  <string name="revision_diff_compare_title">Compara les revisions: %s</string>
+  <string name="revision_diff_from">De:</string>
+  <string name="revision_diff_to">Per a:</string>
+  <string name="revision_diff_line_num">Línia %d</string>
+  <string name="revision_diff_line_nums">Línies %d–%d</string>
+  <string name="revision_diff_line_added">Línia afegida</string>
+  <string name="revision_diff_line_removed">Línia eliminada</string>
+  <string name="revision_diff_paragraph_added">Paràgraf afegit</string>
+  <string name="revision_diff_paragraph_removed">Paràgraf eliminat</string>
+  <string name="revision_undo_success">S\'ha desfet la revisió.</string>
+  <string name="revision_compare_button">Comparar</string>
+  <string name="revision_compare_two_only">Només es poden seleccionar dues revisions.</string>
   <string name="watchlist_page_add_to_watchlist_snackbar">%1$s i la seva pàgina de discussió s\'han afegit a la vostra llista de seguiment %2$s.</string>
   <string name="watchlist_page_add_to_watchlist_snackbar_action">Canvia</string>
   <string name="watchlist_page_add_to_watchlist_snackbar_period_permanently">permanentment</string>

@@ -11,17 +11,14 @@ object ReleaseUtil {
     private const val RELEASE_ALPHA = 2
     private const val RELEASE_DEV = 3
 
-    @JvmStatic
     val isProdRelease: Boolean
         get() = calculateReleaseType() == RELEASE_PROD
 
-    @JvmStatic
     val isPreProdRelease: Boolean
         get() = calculateReleaseType() != RELEASE_PROD
     val isAlphaRelease: Boolean
         get() = calculateReleaseType() == RELEASE_ALPHA
 
-    @JvmStatic
     val isPreBetaRelease: Boolean
         get() = when (calculateReleaseType()) {
             RELEASE_PROD, RELEASE_BETA -> false
@@ -34,10 +31,10 @@ object ReleaseUtil {
 
     @JvmStatic
     fun getChannel(ctx: Context): String {
-        var channel = Prefs.getAppChannel()
+        var channel = Prefs.appChannel
         if (channel == null) {
             channel = getChannelFromManifest(ctx)
-            Prefs.setAppChannel(channel)
+            Prefs.appChannel = channel
         }
         return channel
     }
@@ -55,7 +52,7 @@ object ReleaseUtil {
         return try {
             val info = ctx.packageManager
                     .getApplicationInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_META_DATA)
-            val channel = info.metaData.getString(Prefs.getAppChannelKey())
+            val channel = info.metaData.getString(Prefs.appChannelKey)
             channel ?: ""
         } catch (t: Throwable) {
             ""

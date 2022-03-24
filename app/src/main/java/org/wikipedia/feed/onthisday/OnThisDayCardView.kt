@@ -26,6 +26,7 @@ import org.wikipedia.readinglist.database.ReadingListPage
 import org.wikipedia.util.DateUtil
 import org.wikipedia.util.StringUtil
 import org.wikipedia.util.TransitionUtil
+import org.wikipedia.views.ImageZoomHelper
 
 class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(context), CardFooterView.Callback {
 
@@ -36,12 +37,11 @@ class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(c
 
     init {
         binding.clickContainer.setOnClickListener { view -> onCardClicked(view) }
-        binding.eventLayout.year.setOnClickListener { view -> onCardClicked(view) }
     }
 
     override fun onFooterClicked() {
         card?.let {
-            funnel.cardClicked(CardType.ON_THIS_DAY, it.wikiSite().languageCode())
+            funnel.cardClicked(CardType.ON_THIS_DAY, it.wikiSite().languageCode)
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation((context as Activity),
                 binding.cardHeader.titleView, context.getString(R.string.transition_on_this_day))
             context.startActivity(OnThisDayActivity.newIntent(context, age, -1,
@@ -61,7 +61,7 @@ class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(c
             value?.let {
                 age = it.age
                 setLayoutDirectionByWikiSite(it.wikiSite(), binding.rtlContainer)
-                binding.eventLayout.yearsText.text = DateUtil.getYearDifferenceString(it.year())
+                binding.eventLayout.yearsText.text = DateUtil.getYearDifferenceString(it.year(), it.wikiSite().languageCode)
                 updateOtdEventUI(it)
                 header(it)
                 footer(it)
@@ -71,7 +71,7 @@ class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(c
     private fun header(card: OnThisDayCard) {
         binding.cardHeader
             .setTitle(card.title())
-            .setLangCode(card.wikiSite().languageCode())
+            .setLangCode(card.wikiSite().languageCode)
             .setCard(card)
             .setCallback(callback)
         binding.eventLayout.text.text = card.text()
@@ -82,7 +82,7 @@ class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(c
         binding.eventLayout.pagesIndicator.visibility = GONE
         binding.cardFooterView.setFooterActionText(
             card.footerActionText(),
-            card.wikiSite().languageCode()
+            card.wikiSite().languageCode
         )
         binding.cardFooterView.callback = this
     }
@@ -90,7 +90,7 @@ class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(c
     private fun onCardClicked(view: View) {
         card?.let {
             val isYearClicked = view.id == R.id.year
-            funnel.cardClicked(CardType.ON_THIS_DAY, it.wikiSite().languageCode())
+            funnel.cardClicked(CardType.ON_THIS_DAY, it.wikiSite().languageCode)
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation((context as Activity),
                 binding.cardHeader.titleView, context.getString(R.string.transition_on_this_day))
             context.startActivity(OnThisDayActivity.newIntent(context, age, if (isYearClicked) it.year() else -1, it.wikiSite(),
@@ -106,10 +106,11 @@ class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(c
             val chosenPage = pages.find { it.thumbnailUrl != null }
             chosenPage?.let { page ->
                 if (page.thumbnailUrl.isNullOrEmpty()) {
-                    binding.eventLayout.page.image.visibility = GONE
+                    binding.eventLayout.page.imageContainer.visibility = GONE
                 } else {
-                    binding.eventLayout.page.image.visibility = VISIBLE
+                    binding.eventLayout.page.imageContainer.visibility = VISIBLE
                     binding.eventLayout.page.image.loadImage(Uri.parse(page.thumbnailUrl))
+                    ImageZoomHelper.setViewZoomable(binding.eventLayout.page.image)
                 }
                 binding.eventLayout.page.description.text = page.description
                 binding.eventLayout.page.description.visibility =
@@ -124,39 +125,70 @@ class OnThisDayCardView(context: Context) : DefaultFeedCardView<OnThisDayCard>(c
                     )
                 }
                 binding.eventLayout.page.root.setOnLongClickListener { view ->
-                    val pageTitle = page.getPageTitle(card.wikiSite())
-                    val entry = HistoryEntry(pageTitle, HistoryEntry.SOURCE_ON_THIS_DAY_CARD)
-                    LongPressMenu(view, true, object : LongPressMenu.Callback {
-                        override fun onOpenLink(entry: HistoryEntry) {
-                            callback?.onSelectPage(card, entry, TransitionUtil.getSharedElements(context, binding.eventLayout.page.image))
-                        }
+                    if (ImageZoomHelper.isZooming) {
+                        ImageZoomHelper.dispatchCancelEvent(binding.eventLayout.page.root)
+                    } else {
+                        val pageTitle = page.getPageTitle(card.wikiSite())
+                        val entry = HistoryEntry(pageTitle, HistoryEntry.SOURCE_ON_THIS_DAY_CARD)
+                        LongPressMenu(view, true, object : LongPressMenu.Callback {
+                            override fun onOpenLink(entry: HistoryEntry) {
+                                callback?.onSelectPage(
+                                    card,
+                                    entry,
+                                    TransitionUtil.getSharedElements(
+                                        context,
+                                        binding.eventLayout.page.image
+                                    )
+                                )
+                            }
 
-                        override fun onOpenInNewTab(entry: HistoryEntry) {
-                            callback?.onSelectPage(card, entry, true)
-                        }
+                            override fun onOpenInNewTab(entry: HistoryEntry) {
+                                callback?.onSelectPage(card, entry, true)
+                            }
 
-                        override fun onAddRequest(entry: HistoryEntry, addToDefault: Boolean) {
-                            if (addToDefault) {
-                                ReadingListBehaviorsUtil.addToDefaultList(context as AppCompatActivity, entry.title,
-                                    InvokeSource.ON_THIS_DAY_CARD_BODY) { readingListId ->
-                                        bottomSheetPresenter.show((context as AppCompatActivity).supportFragmentManager,
-                                            MoveToReadingListDialog.newInstance(readingListId, entry.title, InvokeSource.ON_THIS_DAY_CARD_BODY))
+                            override fun onAddRequest(entry: HistoryEntry, addToDefault: Boolean) {
+                                if (addToDefault) {
+                                    ReadingListBehaviorsUtil.addToDefaultList(
+                                        context as AppCompatActivity, entry.title,
+                                        InvokeSource.ON_THIS_DAY_CARD_BODY
+                                    ) { readingListId ->
+                                        bottomSheetPresenter.show(
+                                            (context as AppCompatActivity).supportFragmentManager,
+                                            MoveToReadingListDialog.newInstance(
+                                                readingListId,
+                                                entry.title,
+                                                InvokeSource.ON_THIS_DAY_CARD_BODY
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    bottomSheetPresenter.show(
+                                        (context as AppCompatActivity).supportFragmentManager,
+                                        AddToReadingListDialog.newInstance(
+                                            entry.title,
+                                            InvokeSource.ON_THIS_DAY_CARD_BODY
+                                        )
+                                    )
                                 }
-                            } else {
-                                bottomSheetPresenter.show((context as AppCompatActivity).supportFragmentManager,
-                                    AddToReadingListDialog.newInstance(entry.title, InvokeSource.ON_THIS_DAY_CARD_BODY)
-                                )
                             }
-                        }
 
-                        override fun onMoveRequest(page: ReadingListPage?, entry: HistoryEntry) {
-                            page?.let {
-                                bottomSheetPresenter.show((context as AppCompatActivity).supportFragmentManager,
-                                    MoveToReadingListDialog.newInstance(it.listId, entry.title, InvokeSource.ON_THIS_DAY_CARD_BODY)
-                                )
+                            override fun onMoveRequest(
+                                page: ReadingListPage?,
+                                entry: HistoryEntry
+                            ) {
+                                page?.let {
+                                    bottomSheetPresenter.show(
+                                        (context as AppCompatActivity).supportFragmentManager,
+                                        MoveToReadingListDialog.newInstance(
+                                            it.listId,
+                                            entry.title,
+                                            InvokeSource.ON_THIS_DAY_CARD_BODY
+                                        )
+                                    )
+                                }
                             }
-                        }
-                    }).show(entry)
+                        }).show(entry)
+                    }
                     true
                 }
             }

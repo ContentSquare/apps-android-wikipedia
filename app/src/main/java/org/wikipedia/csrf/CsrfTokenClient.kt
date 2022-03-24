@@ -16,8 +16,7 @@ import java.util.concurrent.Semaphore
 
 class CsrfTokenClient(private val loginWikiSite: WikiSite, private val numRetries: Int,
                       private val csrfService: Service) {
-    constructor(site: WikiSite) : this(site, site)
-    constructor(csrfWikiSite: WikiSite, loginWikiSite: WikiSite) : this(loginWikiSite, MAX_RETRIES, ServiceFactory.get(csrfWikiSite))
+    constructor(site: WikiSite) : this(WikipediaApp.getInstance().wikiSite, MAX_RETRIES, ServiceFactory.get(site))
 
     val token: Observable<String>
         get() {
@@ -28,12 +27,16 @@ class CsrfTokenClient(private val loginWikiSite: WikiSite, private val numRetrie
                     if (emitter.isDisposed) {
                         return@create
                     }
+                    var lastError: Throwable? = null
                     for (retry in 0 until numRetries) {
                         if (retry > 0) {
                             // Log in explicitly
                             LoginClient().loginBlocking(loginWikiSite, AccountUtil.userName!!, AccountUtil.password!!, "")
                                     .subscribeOn(Schedulers.io())
-                                    .blockingSubscribe({ }) { L.e(it) }
+                                    .blockingSubscribe({ }) {
+                                        L.e(it)
+                                        lastError = it
+                                    }
                         }
                         if (emitter.isDisposed) {
                             return@create
@@ -46,7 +49,10 @@ class CsrfTokenClient(private val loginWikiSite: WikiSite, private val numRetrie
                                     if (AccountUtil.isLoggedIn && token == ANON_TOKEN) {
                                         throw RuntimeException("App believes we're logged in, but got anonymous token.")
                                     }
-                                }, { L.e(it) })
+                                }, {
+                                    L.e(it)
+                                    lastError = it
+                                })
                         if (emitter.isDisposed) {
                             return@create
                         }
@@ -60,7 +66,7 @@ class CsrfTokenClient(private val loginWikiSite: WikiSite, private val numRetrie
                         if (token == ANON_TOKEN) {
                             bailWithLogout()
                         }
-                        throw IOException("Invalid token, or login failure.")
+                        throw lastError ?: IOException("Invalid token, or login failure.")
                     }
                 } catch (t: Throwable) {
                     emitter.onError(t)
@@ -75,7 +81,7 @@ class CsrfTokenClient(private val loginWikiSite: WikiSite, private val numRetrie
     private fun bailWithLogout() {
         // Signal to the rest of the app that we're explicitly logging out in the background.
         WikipediaApp.getInstance().logOut()
-        Prefs.setLoggedOutInBackground(true)
+        Prefs.loggedOutInBackground = true
         WikipediaApp.getInstance().bus.post(LoggedOutInBackgroundEvent())
     }
 

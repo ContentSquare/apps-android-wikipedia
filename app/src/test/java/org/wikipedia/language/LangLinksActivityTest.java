@@ -21,8 +21,8 @@ public class LangLinksActivityTest{
         PageTitle title = new PageTitle(null, "洋基體育場 (1923年)", WikiSite.forLanguageCode("zh-hant"));
         List<PageTitle> list = getBaseLanguageEntries();
 
-        LangLinksActivity.addVariantEntriesIfNeeded(WikipediaApp.getInstance().language(), title, list);
-        assertThat(list, is(getExpectedZhHantResults()));
+        LangLinksViewModel.addVariantEntriesIfNeeded(WikipediaApp.getInstance().language(), title, list);
+        compareLists(list, getExpectedZhHantResults());
     }
 
     @Test public void testAddChineseEntriesForSimplifiedChinese() {
@@ -30,8 +30,8 @@ public class LangLinksActivityTest{
         PageTitle title = new PageTitle(null, "洋基体育场 (1923年)", WikiSite.forLanguageCode("zh-hans"));
         List<PageTitle> list = getBaseLanguageEntries();
 
-        LangLinksActivity.addVariantEntriesIfNeeded(WikipediaApp.getInstance().language(), title, list);
-        assertThat(list, is(getExpectedZhHansResults()));
+        LangLinksViewModel.addVariantEntriesIfNeeded(WikipediaApp.getInstance().language(), title, list);
+        compareLists(list, getExpectedZhHansResults());
     }
 
     @Test public void testSkipAddChineseEntries() {
@@ -39,8 +39,8 @@ public class LangLinksActivityTest{
         PageTitle title = new PageTitle(null, "Yankee Stadium (1923)", WikiSite.forLanguageCode("da"));
         List<PageTitle> list = getBaseLanguageEntriesWithZhVariants();
 
-        LangLinksActivity.addVariantEntriesIfNeeded(WikipediaApp.getInstance().language(), title, list);
-        assertThat(list, is(getExpectedGeneralResults()));
+        LangLinksViewModel.addVariantEntriesIfNeeded(WikipediaApp.getInstance().language(), title, list);
+        compareLists(list, getExpectedGeneralResults());
     }
 
     private List<PageTitle> getBaseLanguageEntries() {
@@ -93,5 +93,12 @@ public class LangLinksActivityTest{
             }
         }
         return result;
+    }
+
+    private void compareLists(List<PageTitle> list1, List<PageTitle> list2) {
+        for (int i = 0; i < list1.size(); i++) {
+            assertThat(list1.get(i).getUri(), is(list2.get(i).getUri()));
+            assertThat(list1.get(i).getDisplayText(), is(list2.get(i).getDisplayText()));
+        }
     }
 }

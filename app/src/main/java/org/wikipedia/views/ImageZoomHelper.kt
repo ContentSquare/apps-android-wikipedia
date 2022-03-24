@@ -1,7 +1,6 @@
 package org.wikipedia.views
 
 import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.graphics.Color
@@ -11,10 +10,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.animation.addListener
+import androidx.core.app.ActivityCompat
 import androidx.core.graphics.contains
 import androidx.core.view.forEach
 import java.lang.ref.WeakReference
-import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -50,7 +50,7 @@ class ImageZoomHelper(activity: Activity) {
         val activity = activityWeakReference.get() ?: return false
         if (ev.pointerCount == 2) {
             if (zoomableView == null) {
-                val view = findZoomableView(ev, activity.findViewById(android.R.id.content))
+                val view = findZoomableView(ev, ActivityCompat.requireViewById(activity, android.R.id.content))
                 if (view != null) {
                     zoomableView = view
 
@@ -159,28 +159,17 @@ class ImageZoomHelper(activity: Activity) {
                     }
                     darkView?.alpha = (alphaEnd - alphaStart) * animatedFraction + alphaStart
                 }
-                valueAnimator.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationCancel(animation: Animator) {
-                        super.onAnimationCancel(animation)
-                        end()
+                val endAction = { _: Animator ->
+                    if (zoomableView != null && zoomableViewFrameLP != null) {
+                        updateZoomableView(1f, scaleYStart, scaleXStart,
+                            leftMarginStart!!, topMarginStart!!,
+                            scaleXEnd, scaleYEnd, leftMarginEnd, topMarginEnd)
                     }
-
-                    override fun onAnimationEnd(animation: Animator) {
-                        super.onAnimationEnd(animation)
-                        end()
-                    }
-
-                    fun end() {
-                        if (zoomableView != null && zoomableViewFrameLP != null) {
-                            updateZoomableView(1f, scaleYStart, scaleXStart,
-                                    leftMarginStart!!, topMarginStart!!,
-                                    scaleXEnd, scaleYEnd, leftMarginEnd, topMarginEnd)
-                        }
-                        dismissDialogAndViews()
-                        valueAnimator.removeAllListeners()
-                        valueAnimator.removeAllUpdateListeners()
-                    }
-                })
+                    dismissDialogAndViews()
+                    valueAnimator.removeAllListeners()
+                    valueAnimator.removeAllUpdateListeners()
+                }
+                valueAnimator.addListener(onCancel = endAction, onEnd = endAction)
                 valueAnimator.start()
                 return true
             }
@@ -312,6 +301,13 @@ class ImageZoomHelper(activity: Activity) {
 
         fun clearViewZoomable(view: View) {
             view.tag = getIntTag(view) and FLAG_ZOOMABLE.inv()
+        }
+
+        fun dispatchCancelEvent(view: View) {
+            // Dispatch a fake CANCEL event to the container view, so that the long-press ripple is cancelled.
+            view.dispatchTouchEvent(
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
+            )
         }
     }
 }

@@ -40,7 +40,7 @@ class ReferenceDialog : ExtendedBottomSheetDialogFragment() {
                 binding.referencePager.adapter = ReferencesAdapter(this)
                 TabLayoutMediator(binding.pageIndicatorView, binding.referencePager) { _, _ -> }.attach()
                 binding.referencePager.setCurrentItem(it.selectedReferenceIndex, true)
-                L10nUtil.setConditionalLayoutDirection(binding.root, it.linkHandler.wikiSite.languageCode())
+                L10nUtil.setConditionalLayoutDirection(binding.root, it.linkHandler.wikiSite.languageCode)
             } ?: return@let null
         } ?: run {
             dismiss()
@@ -53,10 +53,8 @@ class ReferenceDialog : ExtendedBottomSheetDialogFragment() {
         if (callback()?.referencesGroup?.size == 1) {
             binding.pageIndicatorView.visibility = View.GONE
             binding.indicatorDivider.visibility = View.GONE
-        } else {
-            val behavior = BottomSheetBehavior.from(binding.root.parent as View)
-            behavior.setPeekHeight(DimenUtil.displayHeightPx / 2)
         }
+        BottomSheetBehavior.from(binding.root.parent as View).peekHeight = DimenUtil.displayHeightPx
     }
 
     override fun onDestroyView() {
@@ -69,8 +67,8 @@ class ReferenceDialog : ExtendedBottomSheetDialogFragment() {
         val isLowercase = newLinkText.contains("lower")
         if (newLinkText.contains("alpha ")) {
             val strings = newLinkText.split(" ")
-            var alphaReference = StringUtil.getBase26String(strings[strings.size - 1].replace("]", "").toInt())
-            alphaReference = if (isLowercase) alphaReference.toLowerCase(Locale.getDefault()) else alphaReference
+            var alphaReference = StringUtil.getBase26String(strings.last().replace("]", "").toInt())
+            alphaReference = if (isLowercase) alphaReference.lowercase(Locale.getDefault()) else alphaReference
             newLinkText = alphaReference
         }
         return newLinkText.replace("[\\[\\]]".toRegex(), "") + "."
@@ -95,7 +93,11 @@ class ReferenceDialog : ExtendedBottomSheetDialogFragment() {
 
         fun bindItem(idText: CharSequence?, contents: CharSequence?) {
             binding.referenceId.text = idText
-            binding.referenceText.text = contents
+            binding.root.post {
+                if (isAdded) {
+                    binding.referenceText.text = contents
+                }
+            }
         }
     }
 
@@ -110,7 +112,7 @@ class ReferenceDialog : ExtendedBottomSheetDialogFragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.bindItem(processLinkTextWithAlphaReferences(references[position].text),
-                    StringUtil.fromHtml(StringUtil.removeCiteMarkup(StringUtil.removeStyleTags(references[position].content))))
+                    StringUtil.fromHtml(StringUtil.removeCiteMarkup(StringUtil.removeStyleTags(references[position].html))))
         }
     }
 

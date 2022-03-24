@@ -1,61 +1,54 @@
 package org.wikipedia.util
 
 import android.content.res.Configuration
+import android.content.res.Resources
+import android.text.TextUtils
 import android.util.SparseArray
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.os.ConfigurationCompat
 import org.wikipedia.WikipediaApp
-import org.wikipedia.language.AppLanguageLookUpTable.*
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.CHINESE_CN_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.CHINESE_HK_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.CHINESE_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.CHINESE_MO_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.CHINESE_MY_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.CHINESE_SG_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.CHINESE_TW_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.SIMPLIFIED_CHINESE_LANGUAGE_CODE
+import org.wikipedia.language.AppLanguageLookUpTable.Companion.TRADITIONAL_CHINESE_LANGUAGE_CODE
 import org.wikipedia.page.PageTitle
 import java.util.*
 
 object L10nUtil {
-
-    private val RTL_LANGS = arrayOf(
-            "ar", "arc", "arz", "azb", "bcc", "bqi", "ckb", "dv", "fa", "glk", "he",
-            "khw", "ks", "lrc", "mzn", "nqo", "pnb", "ps", "sd", "ug", "ur", "yi"
-    )
-
-    @JvmStatic
     val isDeviceRTL: Boolean
-        get() = isCharRTL(Locale.getDefault().displayName[0])
+        get() = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL
 
     private val currentConfiguration: Configuration
         get() = Configuration(WikipediaApp.getInstance().resources.configuration)
 
-    @JvmStatic
     fun isLangRTL(lang: String): Boolean {
-        return RTL_LANGS.binarySearch(lang) >= 0
+        return TextUtils.getLayoutDirectionFromLocale(Locale(lang)) == View.LAYOUT_DIRECTION_RTL
     }
 
-    @JvmStatic
     fun setConditionalTextDirection(view: View, lang: String) {
         view.textDirection = if (isLangRTL(lang)) View.TEXT_DIRECTION_RTL else View.TEXT_DIRECTION_LTR
     }
 
-    @JvmStatic
     fun setConditionalLayoutDirection(view: View, lang: String) {
-        view.layoutDirection = if (isLangRTL(lang)) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
+        view.layoutDirection = TextUtils.getLayoutDirectionFromLocale(Locale(lang))
     }
 
-    private fun isCharRTL(c: Char): Boolean {
-        val dir = Character.getDirectionality(c).toInt()
-        return dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT.toInt() || dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC.toInt()
-    }
-
-    @JvmStatic
     fun getStringForArticleLanguage(languageCode: String, resId: Int): String {
         return getStringsForLocale(Locale(languageCode), intArrayOf(resId))[resId]
     }
 
-    @JvmStatic
     fun getStringForArticleLanguage(title: PageTitle, resId: Int): String {
-        return getStringsForLocale(Locale(title.wikiSite.languageCode()), intArrayOf(resId))[resId]
+        return getStringsForLocale(Locale(title.wikiSite.languageCode), intArrayOf(resId))[resId]
     }
 
     fun getStringsForArticleLanguage(title: PageTitle, resId: IntArray): SparseArray<String> {
-        return getStringsForLocale(Locale(title.wikiSite.languageCode()), resId)
+        return getStringsForLocale(Locale(title.wikiSite.languageCode), resId)
     }
 
     private fun getStringsForLocale(targetLocale: Locale,
@@ -75,6 +68,22 @@ object L10nUtil {
         // reset to current configuration
         WikipediaApp.getInstance().createConfigurationContext(config)
         return localizedStrings
+    }
+
+    // To be used only for plural strings and strings requiring arguments
+    fun getResourcesForWikiLang(languageCode: String): Resources? {
+        val config = currentConfiguration
+        val targetLocale = Locale(languageCode)
+        val systemLocale = ConfigurationCompat.getLocales(config)[0]
+        if (systemLocale.language == targetLocale.language) {
+            return null
+        }
+        setDesiredLocale(config, targetLocale)
+        val targetResources = WikipediaApp.getInstance().createConfigurationContext(config).resources
+        config.setLocale(systemLocale)
+        // reset to current configuration
+        WikipediaApp.getInstance().createConfigurationContext(config)
+        return targetResources
     }
 
     private fun getTargetStrings(@StringRes strings: IntArray, altConfig: Configuration): SparseArray<String> {
@@ -97,7 +106,6 @@ object L10nUtil {
         }
     }
 
-    @JvmStatic
     fun getDesiredLanguageCode(langCode: String): String {
         return when (langCode) {
             TRADITIONAL_CHINESE_LANGUAGE_CODE, CHINESE_TW_LANGUAGE_CODE, CHINESE_HK_LANGUAGE_CODE,
@@ -108,7 +116,6 @@ object L10nUtil {
         }
     }
 
-    @JvmStatic
     fun setDesiredLocale(config: Configuration, desiredLocale: Locale) {
         // when loads API in chinese variant, we can get zh-hant, zh-hans and zh
         // but if we want to display chinese correctly based on the article itself, we have to

@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'kotlin-kapt'
 
 def static getDate() {
     def date = new Date()
@@ -16,7 +18,7 @@ def computeVersionName(label) {
 final JavaVersion JAVA_VERSION = JavaVersion.VERSION_1_8
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     compileOptions {
         sourceCompatibility = JAVA_VERSION
@@ -27,21 +29,22 @@ android {
         jvmTarget = JAVA_VERSION
     }
 
-    dexOptions {
-        preDexLibraries = true
-        jumboMode = true
-    }
-
     defaultConfig {
         applicationId 'org.wikipedia'
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 50363
+        targetSdkVersion 31
+        versionCode 50398
         testApplicationId 'org.wikipedia.test'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
 
         vectorDrawables.useSupportLibrary = true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
 
         dimension 'default'
         signingConfig signingConfigs.debug
@@ -69,6 +72,7 @@ android {
         }
         androidTest {
             java.srcDirs += 'src/testlib/java'
+            assets.srcDirs += files("$projectDir/schemas".toString())
         }
     }
 
@@ -84,14 +88,15 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            testProguardFile 'test-proguard-rules.pro'
+            testProguardFiles 'test-proguard-rules.pro'
         }
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles 'test-proguard-rules.pro'
         }
     }
 
@@ -117,6 +122,10 @@ android {
     }
 }
 
+configurations {
+    compileClasspath.extendsFrom(implementation)
+}
+
 apply from: '../gradle/src/test.gradle'
 apply from: '../gradle/src/ktlint.gradle'
 
@@ -129,28 +138,36 @@ dependencies {
     String retrofitVersion = '2.9.0'
     String glideVersion = '4.11.0'
     String mockitoVersion = '3.4.0'
-    String leakCanaryVersion = '2.5'
+    String leakCanaryVersion = '2.8.1'
     String kotlinCoroutinesVersion = '1.3.9'
-    String firebaseMessagingVersion = '22.0.0'
-    String mlKitVersion = '16.1.1'
+    String firebaseMessagingVersion = '23.0.0'
+    String mlKitVersion = '17.0.3'
+    String roomVersion = "2.4.1"
+    String espressoVersion = '3.4.0'
+    String serialization_version = '1.2.1'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version"
 
     implementation project(':library')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.google.android.material:material:1.3.0"
-    implementation "androidx.core:core-ktx:1.5.0"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation "androidx.fragment:fragment-ktx:1.3.4"
+    implementation "com.google.android.material:material:1.5.0"
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation "androidx.core:core-ktx:1.7.0"
+    implementation "androidx.browser:browser:1.4.0"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation "androidx.paging:paging-runtime-ktx:3.1.0"
     implementation "androidx.palette:palette-ktx:1.0.0"
-    implementation "androidx.preference:preference-ktx:1.1.1"
+    implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
 
     implementation('com.github.michael-rapp:chrome-like-tab-switcher:0.4.6') {
         exclude group: 'org.jetbrains'
@@ -158,19 +175,24 @@ dependencies {
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     implementation "com.github.bumptech.glide:okhttp3-integration:$glideVersion"
-    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+    kapt("com.github.bumptech.glide:compiler:$glideVersion")
 
-    implementation 'com.google.code.gson:gson:2.8.6'
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava3:$retrofitVersion"
     implementation "io.reactivex.rxjava3:rxjava:3.0.4"
     implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
     implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'org.jsoup:jsoup:1.12.1'
+    implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation "com.github.skydoves:balloon:1.3.4"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    implementation "androidx.room:room-rxjava3:$roomVersion"
 
     // For language detection during editing
     alphaImplementation "com.google.mlkit:language-id:$mlKitVersion"
@@ -188,12 +210,14 @@ dependencies {
     testImplementation "com.squareup.okhttp3:mockwebserver:$okHttpVersion"
     testImplementation "commons-io:commons-io:2.6"
     testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation "androidx.room:room-testing:$roomVersion"
 
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.3.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-web:$espressoVersion"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-    androidTestUtil 'androidx.test:orchestrator:1.3.0'
+    androidTestImplementation "android.arch.persistence.room:testing:1.1.1"
+    androidTestUtil 'androidx.test:orchestrator:1.4.1'
 }

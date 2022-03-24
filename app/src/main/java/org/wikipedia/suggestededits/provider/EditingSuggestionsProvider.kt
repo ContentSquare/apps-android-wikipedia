@@ -29,15 +29,12 @@ object EditingSuggestionsProvider {
 
     private val imagesWithMissingTagsCache: Stack<MwQueryPage> = Stack()
 
-    private val articlesWithMissingImagesCache = mutableListOf<String>()
-    private var articlesWithMissingImagesCacheLang: String = ""
-
     private const val MAX_RETRY_LIMIT: Long = 50
 
     fun getNextArticleWithMissingDescription(wiki: WikiSite, retryLimit: Long = MAX_RETRY_LIMIT): Observable<PageSummary> {
         return Observable.fromCallable { mutex.acquire() }.flatMap {
             var cachedTitle = ""
-            if (articlesWithMissingDescriptionCacheLang != wiki.languageCode()) {
+            if (articlesWithMissingDescriptionCacheLang != wiki.languageCode) {
                 // evict the cache if the language has changed.
                 articlesWithMissingDescriptionCache.clear()
             }
@@ -48,7 +45,7 @@ object EditingSuggestionsProvider {
             if (cachedTitle.isNotEmpty()) {
                 Observable.just(cachedTitle)
             } else {
-                ServiceFactory.getRest(WikiSite(Service.WIKIDATA_URL)).getArticlesWithoutDescriptions(WikiSite.normalizeLanguageCode(wiki.languageCode()))
+                ServiceFactory.getRest(WikiSite(Service.WIKIDATA_URL)).getArticlesWithoutDescriptions(WikiSite.normalizeLanguageCode(wiki.languageCode))
                         .flatMap { pages ->
                             val titleList = ArrayList<String>()
                             pages.forEach { titleList.add(it.title()) }
@@ -56,10 +53,10 @@ object EditingSuggestionsProvider {
                         }
                         .map { pages ->
                             var title: String? = null
-                            articlesWithMissingDescriptionCacheLang = wiki.languageCode()
-                            pages.query?.pages()?.forEach {
-                                if (it.description().isNullOrEmpty()) {
-                                    articlesWithMissingDescriptionCache.push(it.title())
+                            articlesWithMissingDescriptionCacheLang = wiki.languageCode
+                            pages.query?.pages?.forEach {
+                                if (it.description.isNullOrEmpty()) {
+                                    articlesWithMissingDescriptionCache.push(it.title)
                                 }
                             }
                             if (!articlesWithMissingDescriptionCache.empty()) {
@@ -80,7 +77,7 @@ object EditingSuggestionsProvider {
         return Observable.fromCallable { mutex.acquire() }.flatMap {
             val targetWiki = WikiSite.forLanguageCode(targetLang)
             var cachedPair: Pair<PageTitle, PageTitle>? = null
-            if (articlesWithTranslatableDescriptionCacheFromLang != sourceWiki.languageCode() ||
+            if (articlesWithTranslatableDescriptionCacheFromLang != sourceWiki.languageCode ||
                     articlesWithTranslatableDescriptionCacheToLang != targetLang) {
                 // evict the cache if the language has changed.
                 articlesWithTranslatableDescriptionCache.clear()
@@ -92,7 +89,7 @@ object EditingSuggestionsProvider {
             if (cachedPair != null) {
                 Observable.just(cachedPair)
             } else {
-                ServiceFactory.getRest(WikiSite(Service.WIKIDATA_URL)).getArticlesWithTranslatableDescriptions(WikiSite.normalizeLanguageCode(sourceWiki.languageCode()), WikiSite.normalizeLanguageCode(targetLang))
+                ServiceFactory.getRest(WikiSite(Service.WIKIDATA_URL)).getArticlesWithTranslatableDescriptions(WikiSite.normalizeLanguageCode(sourceWiki.languageCode), WikiSite.normalizeLanguageCode(targetLang))
                         .flatMap({ pages ->
                             if (pages.isEmpty()) {
                                 throw ListEmptyException()
@@ -102,26 +99,25 @@ object EditingSuggestionsProvider {
                         }, { pages, response -> Pair(pages, response) })
                         .map { pair ->
                             val pages = pair.first
-                            val mwPages = pair.second.query?.pages()!!
+                            val mwPages = pair.second.query?.pages!!
                             var targetAndSourcePageTitles: Pair<PageTitle, PageTitle>? = null
-                            articlesWithTranslatableDescriptionCacheFromLang = sourceWiki.languageCode()
+                            articlesWithTranslatableDescriptionCacheFromLang = sourceWiki.languageCode
                             articlesWithTranslatableDescriptionCacheToLang = targetLang
                             for (page in pages) {
-                                val mwPage = mwPages.find { it.title() == page.title() }
-                                if (mwPage != null && !mwPage.description().isNullOrEmpty()) {
+                                val mwPage = mwPages.find { it.title == page.title() }
+                                if (mwPage != null && !mwPage.description.isNullOrEmpty()) {
                                     continue
                                 }
                                 val entity = page.entity
-                                if (entity == null ||
-                                        entity.descriptions().containsKey(targetLang) ||
-                                        sourceLangMustExist && !entity.descriptions().containsKey(sourceWiki.languageCode()) ||
-                                        !entity.sitelinks().containsKey(sourceWiki.dbName()) ||
-                                        !entity.sitelinks().containsKey(targetWiki.dbName())) {
+                                if (entity == null || entity.descriptions.containsKey(targetLang) ||
+                                    sourceLangMustExist && !entity.descriptions.containsKey(sourceWiki.languageCode) ||
+                                    !entity.sitelinks.containsKey(sourceWiki.dbName()) ||
+                                    !entity.sitelinks.containsKey(targetWiki.dbName())) {
                                     continue
                                 }
-                                val sourceTitle = PageTitle(entity.sitelinks()[sourceWiki.dbName()]!!.title, sourceWiki)
-                                sourceTitle.description = entity.descriptions()[sourceWiki.languageCode()]?.value()
-                                articlesWithTranslatableDescriptionCache.push(PageTitle(entity.sitelinks()[targetWiki.dbName()]!!.title, targetWiki) to sourceTitle)
+                                val sourceTitle = PageTitle(entity.sitelinks[sourceWiki.dbName()]!!.title, sourceWiki)
+                                sourceTitle.description = entity.descriptions[sourceWiki.languageCode]?.value
+                                articlesWithTranslatableDescriptionCache.push(PageTitle(entity.sitelinks[targetWiki.dbName()]!!.title, targetWiki) to sourceTitle)
                             }
                             if (!articlesWithTranslatableDescriptionCache.empty()) {
                                 targetAndSourcePageTitles = articlesWithTranslatableDescriptionCache.pop()
@@ -233,8 +229,8 @@ object EditingSuggestionsProvider {
             } else {
                 ServiceFactory.get(WikiSite(Service.COMMONS_URL)).randomWithImageInfo
                         .map { response ->
-                            response.query?.pages()?.filter { it.imageInfo()?.mimeType == "image/jpeg" }?.forEach { page ->
-                                if (page.revisions().none { "P180" in it.getContentFromSlot("mediainfo") }) {
+                            response.query?.pages?.filter { it.imageInfo()?.mime == "image/jpeg" }?.forEach { page ->
+                                if (page.revisions.none { "P180" in it.getContentFromSlot("mediainfo") }) {
                                     imagesWithMissingTagsCache.push(page)
                                 }
                             }

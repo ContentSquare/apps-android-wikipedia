@@ -66,9 +66,14 @@ class ResetPasswordActivity : BaseActivity() {
     private fun validateThenLogin() {
         clearErrors()
         when (validateInput(userName, getText(binding.resetPasswordInput), getText(binding.resetPasswordRepeat), "")) {
-            ValidateResult.INVALID_PASSWORD -> {
+            ValidateResult.PASSWORD_TOO_SHORT -> {
                 binding.resetPasswordInput.requestFocus()
                 binding.resetPasswordInput.error = getString(R.string.create_account_password_error)
+                return
+            }
+            ValidateResult.PASSWORD_IS_USERNAME -> {
+                binding.resetPasswordInput.requestFocus()
+                binding.resetPasswordInput.error = getString(R.string.create_account_password_is_username)
                 return
             }
             ValidateResult.PASSWORD_MISMATCH -> {

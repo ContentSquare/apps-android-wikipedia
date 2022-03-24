@@ -13,30 +13,27 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.math.MathUtils;
 
 import org.wikipedia.analytics.FunnelManager;
 import org.wikipedia.analytics.InstallReferrerListener;
 import org.wikipedia.analytics.SessionFunnel;
 import org.wikipedia.analytics.eventplatform.EventPlatformClient;
+import org.wikipedia.appshortcuts.AppShortcuts;
 import org.wikipedia.auth.AccountUtil;
 import org.wikipedia.concurrency.RxBus;
 import org.wikipedia.connectivity.NetworkConnectivityReceiver;
-import org.wikipedia.database.Database;
-import org.wikipedia.database.DatabaseClient;
 import org.wikipedia.dataclient.ServiceFactory;
 import org.wikipedia.dataclient.SharedPreferenceCookieManager;
 import org.wikipedia.dataclient.WikiSite;
-import org.wikipedia.edit.summaries.EditSummary;
 import org.wikipedia.events.ChangeTextSizeEvent;
 import org.wikipedia.events.ThemeFontChangeEvent;
-import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.language.AcceptLanguageUtil;
 import org.wikipedia.language.AppLanguageState;
+import org.wikipedia.notifications.NotificationCategory;
 import org.wikipedia.notifications.NotificationPollBroadcastReceiver;
 import org.wikipedia.page.tabs.Tab;
-import org.wikipedia.pageimages.PageImage;
 import org.wikipedia.push.WikipediaFirebaseMessagingService;
-import org.wikipedia.search.RecentSearch;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.settings.RemoteConfig;
 import org.wikipedia.settings.SiteInfoClient;
@@ -45,10 +42,7 @@ import org.wikipedia.util.DimenUtil;
 import org.wikipedia.util.log.L;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -57,20 +51,17 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
-import static org.wikipedia.settings.Prefs.getTextSizeMultiplier;
 import static org.wikipedia.util.DimenUtil.getFontSizeFromSp;
 import static org.wikipedia.util.ReleaseUtil.getChannel;
 
 public class WikipediaApp extends Application {
     private final RemoteConfig remoteConfig = new RemoteConfig();
-    private final Map<Class<?>, DatabaseClient<?>> databaseClients = Collections.synchronizedMap(new HashMap<>());
     private Handler mainThreadHandler;
     private AppLanguageState appLanguageState;
     private FunnelManager funnelManager;
     private SessionFunnel sessionFunnel;
     private NetworkConnectivityReceiver connectivityReceiver = new NetworkConnectivityReceiver();
     private ActivityLifecycleHandler activityLifecycleHandler = new ActivityLifecycleHandler();
-    private Database database;
     private String userAgent;
     private WikiSite wiki;
     private RxBus bus;
@@ -93,10 +84,6 @@ public class WikipediaApp extends Application {
 
     public RxBus getBus() {
         return bus;
-    }
-
-    public Database getDatabase() {
-        return database;
     }
 
     public FunnelManager getFunnelManager() {
@@ -134,7 +121,7 @@ public class WikipediaApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        WikiSite.setDefaultBaseUrl(Prefs.getMediaWikiBaseUrl());
+        WikiSite.setDefaultBaseUrl(Prefs.INSTANCE.getMediaWikiBaseUrl());
 
         // Register here rather than in AndroidManifest.xml so that we can target Android N.
         // https://developer.android.com/topic/performance/background-optimization.html#connectivity-action
@@ -152,12 +139,11 @@ public class WikipediaApp extends Application {
 
         bus = new RxBus();
 
-        currentTheme = unmarshalTheme(Prefs.getCurrentThemeId());
+        currentTheme = unmarshalTheme(Prefs.INSTANCE.getCurrentThemeId());
 
         appLanguageState = new AppLanguageState(this);
         funnelManager = new FunnelManager(this);
         sessionFunnel = new SessionFunnel(this);
-        database = new Database(this);
 
         initTabs();
 
@@ -165,6 +151,9 @@ public class WikipediaApp extends Application {
 
         registerActivityLifecycleCallbacks(activityLifecycleHandler);
         registerComponentCallbacks(activityLifecycleHandler);
+
+        NotificationCategory.Companion.createNotificationChannels(this);
+        AppShortcuts.Companion.setShortcuts(this);
 
         // Kick the notification receiver, in case it hasn't yet been started by the system.
         NotificationPollBroadcastReceiver.startPollTask(this);
@@ -205,9 +194,9 @@ public class WikipediaApp extends Application {
      */
     @NonNull
     public String getAcceptLanguage(@Nullable WikiSite wiki) {
-        String wikiLang = wiki == null || "meta".equals(wiki.languageCode())
+        String wikiLang = wiki == null || "meta".equals(wiki.getLanguageCode())
                 ? ""
-                : defaultString(wiki.languageCode());
+                : defaultString(wiki.getLanguageCode());
         return AcceptLanguageUtil.getAcceptLanguage(wikiLang, appLanguageState.getAppLanguageCode(),
                 appLanguageState.getSystemLanguageCode());
     }
@@ -219,7 +208,7 @@ public class WikipediaApp extends Application {
     @NonNull public synchronized WikiSite getWikiSite() {
         // TODO: why don't we ensure that the app language hasn't changed here instead of the client?
         if (wiki == null) {
-            String lang = Prefs.getMediaWikiBaseUriSupportsLangCode() ? getAppOrSystemLanguageCode() : "";
+            String lang = Prefs.INSTANCE.getMediaWikiBaseUriSupportsLangCode() ? getAppOrSystemLanguageCode() : "";
             WikiSite newWiki = WikiSite.forLanguageCode(lang);
             // Kick off a task to retrieve the site info for the current wiki
             SiteInfoClient.updateFor(newWiki);
@@ -229,36 +218,16 @@ public class WikipediaApp extends Application {
         return wiki;
     }
 
-    public <T> DatabaseClient<T> getDatabaseClient(Class<T> cls) {
-        if (!databaseClients.containsKey(cls)) {
-            DatabaseClient<?> client;
-            if (cls.equals(HistoryEntry.class)) {
-                client = new DatabaseClient<>(this, HistoryEntry.DATABASE_TABLE);
-            } else if (cls.equals(PageImage.class)) {
-                client = new DatabaseClient<>(this, PageImage.DATABASE_TABLE);
-            } else if (cls.equals(RecentSearch.class)) {
-                client = new DatabaseClient<>(this, RecentSearch.DATABASE_TABLE);
-            } else if (cls.equals(EditSummary.class)) {
-                client = new DatabaseClient<>(this, EditSummary.DATABASE_TABLE);
-            } else {
-                throw new RuntimeException("No persister found for class " + cls.getCanonicalName());
-            }
-            databaseClients.put(cls, client);
-        }
-        //noinspection unchecked
-        return (DatabaseClient<T>) databaseClients.get(cls);
-    }
-
     /**
      * Get this app's unique install ID, which is a UUID that should be unique for each install
      * of the app. Useful for anonymous analytics.
      * @return Unique install ID for this app.
      */
     public String getAppInstallID() {
-        String id = Prefs.getAppInstallId();
+        String id = Prefs.INSTANCE.getAppInstallId();
         if (id == null) {
             id = UUID.randomUUID().toString();
-            Prefs.setAppInstallId(id);
+            Prefs.INSTANCE.setAppInstallId(id);
         }
         return id;
     }
@@ -270,21 +239,17 @@ public class WikipediaApp extends Application {
     public void setCurrentTheme(@NonNull Theme theme) {
         if (theme != currentTheme) {
             currentTheme = theme;
-            Prefs.setCurrentThemeId(currentTheme.getMarshallingId());
+            Prefs.INSTANCE.setCurrentThemeId(currentTheme.getMarshallingId());
             bus.post(new ThemeFontChangeEvent());
         }
     }
 
     public boolean setFontSizeMultiplier(int multiplier) {
-        int minMultiplier = getResources().getInteger(R.integer.minTextSizeMultiplier);
-        int maxMultiplier = getResources().getInteger(R.integer.maxTextSizeMultiplier);
-        if (multiplier < minMultiplier) {
-            multiplier = minMultiplier;
-        } else if (multiplier > maxMultiplier) {
-            multiplier = maxMultiplier;
-        }
-        if (multiplier != getTextSizeMultiplier()) {
-            Prefs.setTextSizeMultiplier(multiplier);
+        final int minMultiplier = getResources().getInteger(R.integer.minTextSizeMultiplier);
+        final int maxMultiplier = getResources().getInteger(R.integer.maxTextSizeMultiplier);
+        multiplier = MathUtils.clamp(multiplier, minMultiplier, maxMultiplier);
+        if (multiplier != Prefs.INSTANCE.getTextSizeMultiplier()) {
+            Prefs.INSTANCE.setTextSizeMultiplier(multiplier);
             bus.post(new ChangeTextSizeEvent());
             return true;
         }
@@ -292,8 +257,8 @@ public class WikipediaApp extends Application {
     }
 
     public void setFontFamily(@NonNull String fontFamily) {
-        if (!fontFamily.equals(Prefs.getFontFamily())) {
-            Prefs.setFontFamily(fontFamily);
+        if (!fontFamily.equals(Prefs.INSTANCE.getFontFamily())) {
+            Prefs.INSTANCE.setFontFamily(fontFamily);
             bus.post(new ThemeFontChangeEvent());
         }
     }
@@ -320,10 +285,10 @@ public class WikipediaApp extends Application {
 
     public void commitTabState() {
         if (tabList.isEmpty()) {
-            Prefs.clearTabs();
+            Prefs.INSTANCE.clearTabs();
             initTabs();
         } else {
-            Prefs.setTabs(tabList);
+            Prefs.INSTANCE.setTabs(tabList);
         }
     }
 
@@ -346,7 +311,7 @@ public class WikipediaApp extends Application {
      */
     public float getFontSize(Window window) {
         return getFontSizeFromSp(window,
-                getResources().getDimension(R.dimen.textSize)) * (1.0f + getTextSizeMultiplier()
+                getResources().getDimension(R.dimen.textSize)) * (1.0f + Prefs.INSTANCE.getTextSizeMultiplier()
                 * DimenUtil.getFloat(R.dimen.textSizeMultiplierFactor));
     }
 
@@ -358,13 +323,13 @@ public class WikipediaApp extends Application {
     public void logOut() {
         L.d("Logging out");
         AccountUtil.removeAccount();
-        Prefs.setPushNotificationTokenSubscribed(false);
-        Prefs.setPushNotificationTokenOld("");
+        Prefs.INSTANCE.setPushNotificationTokenSubscribed(false);
+        Prefs.INSTANCE.setPushNotificationTokenOld("");
         ServiceFactory.get(getWikiSite()).getCsrfToken()
                 .subscribeOn(Schedulers.io())
                 .flatMap(response -> {
                     String csrfToken = response.getQuery().csrfToken();
-                    return WikipediaFirebaseMessagingService.Companion.unsubscribePushToken(csrfToken, Prefs.getPushNotificationToken())
+                    return WikipediaFirebaseMessagingService.Companion.unsubscribePushToken(csrfToken, Prefs.INSTANCE.getPushNotificationToken())
                             .flatMap(res -> ServiceFactory.get(getWikiSite()).postLogout(csrfToken).subscribeOn(Schedulers.io()));
                 })
                 .doFinally(() -> SharedPreferenceCookieManager.getInstance().clearAllCookies())
@@ -396,9 +361,9 @@ public class WikipediaApp extends Application {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
-                    if (AccountUtil.isLoggedIn() && response.getQuery().userInfo() != null) {
+                    if (AccountUtil.isLoggedIn() && response.getQuery().getUserInfo() != null) {
                         // noinspection ConstantConditions
-                        int id = response.getQuery().userInfo().id();
+                        int id = response.getQuery().getUserInfo().getId();
                         AccountUtil.putUserIdForLanguage(code, id);
                         L.d("Found user ID " + id + " for " + code);
                     }
@@ -406,8 +371,8 @@ public class WikipediaApp extends Application {
     }
 
     private void initTabs() {
-        if (Prefs.hasTabs()) {
-            tabList.addAll(Prefs.getTabs());
+        if (Prefs.INSTANCE.getHasTabs()) {
+            tabList.addAll(Prefs.INSTANCE.getTabs());
         }
 
         if (tabList.isEmpty()) {

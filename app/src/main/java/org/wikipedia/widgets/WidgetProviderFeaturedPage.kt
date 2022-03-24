@@ -6,9 +6,9 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.text.TextUtils
 import android.text.style.URLSpan
 import android.widget.RemoteViews
+import androidx.core.text.getSpans
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.wikipedia.Constants
@@ -22,6 +22,7 @@ import org.wikipedia.page.PageActivity
 import org.wikipedia.page.PageTitle
 import org.wikipedia.staticdata.MainPageNameData
 import org.wikipedia.util.DateUtil
+import org.wikipedia.util.DeviceUtil
 import org.wikipedia.util.StringUtil
 import org.wikipedia.util.UriUtil
 import org.wikipedia.util.log.L
@@ -40,9 +41,8 @@ class WidgetProviderFeaturedPage : AppWidgetProvider() {
             override fun onFeaturedArticleReceived(pageTitle: PageTitle, widgetText: CharSequence) {
                 for (widgetId in allWidgetIds) {
                     L.d("updating widget...")
-                    val remoteViews = RemoteViews(context.packageName,
-                            R.layout.widget_featured_page)
-                    if (!TextUtils.isEmpty(widgetText)) {
+                    val remoteViews = RemoteViews(context.packageName, R.layout.widget_featured_page)
+                    if (widgetText.isNotEmpty()) {
                         remoteViews.setTextViewText(R.id.widget_content_text, widgetText)
                     }
                     appWidgetManager.updateAppWidget(widgetId, remoteViews)
@@ -52,7 +52,7 @@ class WidgetProviderFeaturedPage : AppWidgetProvider() {
                     intent.putExtra(PageActivity.EXTRA_PAGETITLE, pageTitle)
                     intent.putExtra(Constants.INTENT_FEATURED_ARTICLE_FROM_WIDGET, true)
                     val pendingIntent = PendingIntent.getActivity(context, 1, intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT)
+                            PendingIntent.FLAG_UPDATE_CURRENT or DeviceUtil.pendingIntentFlags)
 
                     remoteViews.setOnClickPendingIntent(R.id.widget_container, pendingIntent)
                     appWidgetManager.updateAppWidget(widgetId, remoteViews)
@@ -86,10 +86,10 @@ class WidgetProviderFeaturedPage : AppWidgetProvider() {
                     }
                 }
                 .subscribe({ response ->
-                    val widgetText: CharSequence = StringUtil.fromHtml(response.displayTitle)
+                    val widgetText = StringUtil.fromHtml(response.displayTitle)
                     val pageTitle = response.getPageTitle(app.wikiSite)
                     cb.onFeaturedArticleReceived(pageTitle, widgetText)
-                }) { throwable: Throwable ->
+                }) { throwable ->
                     cb.onFeaturedArticleReceived(mainPageTitle, mainPageTitle.displayText)
                     L.e(throwable)
                 }
@@ -101,7 +101,7 @@ class WidgetProviderFeaturedPage : AppWidgetProvider() {
         // Parse the HTML, and look for the first link, which should be the
         // article of the day.
         val text = StringUtil.fromHtml(pageLeadContent)
-        val spans = text.getSpans(0, text.length, URLSpan::class.java)
+        val spans = text.getSpans<URLSpan>()
         var titleText = ""
         for (span in spans) {
             if (!span.url.startsWith("/wiki/") ||

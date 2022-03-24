@@ -9,14 +9,11 @@ import org.wikipedia.feed.dataclient.FeedClient
 import org.wikipedia.feed.model.Card
 import org.wikipedia.settings.Prefs
 import org.wikipedia.util.UriUtil
-import java.util.*
 
 class OnboardingClient : FeedClient {
 
     override fun request(context: Context, wiki: WikiSite, age: Int, cb: FeedClient.Callback) {
-        getCards(context).let {
-            FeedCoordinator.postCardsToCallback(cb, if (age < it.size) listOf(it[age]) else emptyList())
-        }
+        FeedCoordinator.postCardsToCallback(cb, listOfNotNull(getCards(context).getOrNull(age)))
     }
 
     private fun getCards(context: Context): List<Card> {
@@ -35,14 +32,14 @@ class OnboardingClient : FeedClient {
         //            cards.add(card);
         //        }
         card = CustomizeOnboardingCard(
-            Announcement("customizeOnboardingCard1",
-                context.getString(R.string.feed_configure_onboarding_text),
-                "https://upload.wikimedia.org/wikipedia/commons/3/3b/Announcement_header_for_Explore_Feed_customization.png",
-                Announcement.Action(context.getString(R.string.feed_configure_onboarding_action), UriUtil.LOCAL_URL_CUSTOMIZE_FEED),
-                context.getString(R.string.onboarding_got_it)
+            Announcement(id = "customizeOnboardingCard1",
+                text = context.getString(R.string.feed_configure_onboarding_text),
+                imageUrl = "https://upload.wikimedia.org/wikipedia/commons/3/3b/Announcement_header_for_Explore_Feed_customization.png",
+                action = Announcement.Action(context.getString(R.string.feed_configure_onboarding_action), UriUtil.LOCAL_URL_CUSTOMIZE_FEED),
+                negativeText = context.getString(R.string.onboarding_got_it)
             )
         )
-        if (card.shouldShow() && Prefs.getExploreFeedVisitCount() <= SHOW_CUSTOMIZE_ONBOARDING_CARD_COUNT) {
+        if (card.shouldShow() && Prefs.exploreFeedVisitCount <= SHOW_CUSTOMIZE_ONBOARDING_CARD_COUNT) {
             cards.add(card)
         }
         return cards

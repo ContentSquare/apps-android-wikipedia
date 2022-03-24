@@ -13,7 +13,7 @@ import androidx.core.widget.PopupWindowCompat
 import org.wikipedia.R
 import org.wikipedia.databinding.ViewReadingListsOverflowBinding
 import org.wikipedia.settings.Prefs
-import org.wikipedia.util.DateUtil.getReadingListsLastSyncDateString
+import org.wikipedia.util.DateUtil.getLastSyncDateString
 import java.text.ParseException
 
 class ReadingListsOverflowView(context: Context) : FrameLayout(context) {
@@ -55,15 +55,15 @@ class ReadingListsOverflowView(context: Context) : FrameLayout(context) {
             popupWindowHost = it
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             PopupWindowCompat.setOverlapAnchor(it, true)
-            PopupWindowCompat.showAsDropDown(it, anchorView, 0, 0, Gravity.END)
+            it.showAsDropDown(anchorView, 0, 0, Gravity.END)
         }
 
-        Prefs.getReadingListsLastSyncTime().let {
+        Prefs.readingListsLastSyncTime.let {
             binding.readingListsOverflowLastSync.visibility = if (it.isNullOrEmpty()) GONE else VISIBLE
             if (!it.isNullOrEmpty()) {
                 try {
                     binding.readingListsOverflowLastSync.text = context.getString(R.string.reading_list_menu_last_sync,
-                            getReadingListsLastSyncDateString(Prefs.getReadingListsLastSyncTime()))
+                            getLastSyncDateString(it))
                 } catch (e: ParseException) {
                     // ignore
                 }

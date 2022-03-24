@@ -18,7 +18,7 @@ import org.wikipedia.auth.AccountUtil.updateAccount
 import org.wikipedia.createaccount.CreateAccountActivity
 import org.wikipedia.databinding.ActivityLoginBinding
 import org.wikipedia.login.LoginClient.LoginFailedException
-import org.wikipedia.notifications.NotificationPollBroadcastReceiver.Companion.pollNotifications
+import org.wikipedia.notifications.PollNotificationWorker
 import org.wikipedia.page.PageTitle
 import org.wikipedia.push.WikipediaFirebaseMessagingService.Companion.updateSubscription
 import org.wikipedia.readinglist.sync.ReadingListSyncAdapter
@@ -58,11 +58,12 @@ class LoginActivity : BaseActivity() {
 
         loginSource = intent.getStringExtra(LOGIN_REQUEST_SOURCE).orEmpty()
         if (loginSource.isNotEmpty() && loginSource == LoginFunnel.SOURCE_SUGGESTED_EDITS) {
-            Prefs.setSuggestedEditsHighestPriorityEnabled(true)
+            Prefs.isSuggestedEditsHighestPriorityEnabled = true
         }
 
-        // always go to account creation before logging in
-        if (savedInstanceState == null) {
+        // always go to account creation before logging in, unless we arrived here through the
+        // system account creation workflow
+        if (savedInstanceState == null && !intent.hasExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)) {
             startCreateAccountActivity()
         }
 
@@ -143,7 +144,7 @@ class LoginActivity : BaseActivity() {
             if (loginSource == LoginFunnel.SOURCE_EDIT) {
                 funnel.logStart(
                         LoginFunnel.SOURCE_EDIT,
-                        intent.getStringExtra(EDIT_SESSION_TOKEN)
+                        intent.getStringExtra(EDIT_SESSION_TOKEN).orEmpty()
                 )
             } else {
                 funnel.logStart(loginSource)
@@ -154,10 +155,7 @@ class LoginActivity : BaseActivity() {
 
     private fun startCreateAccountActivity() {
         funnel.logCreateAccountAttempt()
-        val intent = Intent(this, CreateAccountActivity::class.java)
-        intent.putExtra(CreateAccountActivity.LOGIN_SESSION_TOKEN, funnel.sessionToken)
-        intent.putExtra(CreateAccountActivity.LOGIN_REQUEST_SOURCE, loginSource)
-        startActivityForResult(intent, Constants.ACTIVITY_REQUEST_CREATE_ACCOUNT)
+        startActivityForResult(CreateAccountActivity.newIntent(this, funnel.sessionToken, loginSource), Constants.ACTIVITY_REQUEST_CREATE_ACCOUNT)
     }
 
     private fun onLoginSuccess() {
@@ -168,11 +166,12 @@ class LoginActivity : BaseActivity() {
         // Set reading list syncing to enabled (without the explicit setup instruction),
         // so that the sync adapter can run at least once and check whether syncing is enabled
         // on the server side.
-        Prefs.setReadingListSyncEnabled(true)
-        Prefs.setReadingListPagesDeletedIds(emptySet())
-        Prefs.setReadingListsDeletedIds(emptySet())
+        Prefs.isReadingListSyncEnabled = true
+        Prefs.readingListPagesDeletedIds = emptySet()
+        Prefs.readingListsDeletedIds = emptySet()
         ReadingListSyncAdapter.manualSyncWithForce()
-        pollNotifications(WikipediaApp.getInstance())
+        PollNotificationWorker.schedulePollNotificationJob(this)
+        Prefs.isPushNotificationOptionsSet = false
         updateSubscription()
         finish()
     }
@@ -245,11 +244,7 @@ class LoginActivity : BaseActivity() {
         const val LOGIN_REQUEST_SOURCE = "login_request_source"
         const val EDIT_SESSION_TOKEN = "edit_session_token"
 
-        @JvmStatic
-        @JvmOverloads
-        fun newIntent(context: Context,
-                      source: String,
-                      token: String? = null): Intent {
+        fun newIntent(context: Context, source: String, token: String? = null): Intent {
             return Intent(context, LoginActivity::class.java)
                     .putExtra(LOGIN_REQUEST_SOURCE, source)
                     .putExtra(EDIT_SESSION_TOKEN, token)

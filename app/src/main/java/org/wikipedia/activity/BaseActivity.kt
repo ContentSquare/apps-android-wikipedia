@@ -1,23 +1,23 @@
 package org.wikipedia.activity
 
 import android.Manifest
-import android.content.*
-import android.content.pm.ShortcutManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.text.TextUtils
 import android.view.MenuItem
 import android.view.MotionEvent
-import android.view.View
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.core.content.pm.ShortcutManagerCompat
 import com.skydoves.balloon.Balloon
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -26,13 +26,13 @@ import org.wikipedia.Constants
 import org.wikipedia.R
 import org.wikipedia.WikipediaApp
 import org.wikipedia.analytics.LoginFunnel
-import org.wikipedia.analytics.NotificationFunnel
+import org.wikipedia.analytics.NotificationInteractionFunnel
+import org.wikipedia.analytics.eventplatform.NotificationInteractionEvent
 import org.wikipedia.appshortcuts.AppShortcuts
 import org.wikipedia.auth.AccountUtil
 import org.wikipedia.events.*
 import org.wikipedia.login.LoginActivity
 import org.wikipedia.main.MainActivity
-import org.wikipedia.notifications.NotificationPollBroadcastReceiver
 import org.wikipedia.readinglist.ReadingListSyncBehaviorDialogs
 import org.wikipedia.readinglist.sync.ReadingListSyncAdapter
 import org.wikipedia.readinglist.sync.ReadingListSyncEvent
@@ -62,27 +62,25 @@ abstract class BaseActivity : AppCompatActivity() {
         setTheme()
         removeSplashBackground()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
-                AppShortcuts.ACTION_APP_SHORTCUT == intent.action) {
+        if (AppShortcuts.ACTION_APP_SHORTCUT == intent.action) {
             intent.putExtra(Constants.INTENT_EXTRA_INVOKE_SOURCE, Constants.InvokeSource.APP_SHORTCUTS)
             val shortcutId = intent.getStringExtra(AppShortcuts.APP_SHORTCUT_ID)
-            if (!TextUtils.isEmpty(shortcutId)) {
-                applicationContext.getSystemService(ShortcutManager::class.java)
-                        .reportShortcutUsed(shortcutId)
+            if (!shortcutId.isNullOrEmpty()) {
+                ShortcutManagerCompat.reportShortcutUsed(applicationContext, shortcutId)
             }
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         if (savedInstanceState == null) {
-            NotificationFunnel.processIntent(intent)
+            NotificationInteractionFunnel.processIntent(intent)
+            NotificationInteractionEvent.processIntent(intent)
         }
-        NotificationPollBroadcastReceiver.startPollTask(WikipediaApp.getInstance())
 
         // Conditionally execute all recurring tasks
         RecurringTasksExecutor(WikipediaApp.getInstance()).run()
-        if (Prefs.isReadingListsFirstTimeSync() && AccountUtil.isLoggedIn) {
-            Prefs.setReadingListsFirstTimeSync(false)
-            Prefs.setReadingListSyncEnabled(true)
+        if (Prefs.isReadingListsFirstTimeSync && AccountUtil.isLoggedIn) {
+            Prefs.isReadingListsFirstTimeSync = false
+            Prefs.isReadingListSyncEnabled = true
             ReadingListSyncAdapter.manualSyncWithForce()
         }
 
@@ -94,7 +92,7 @@ abstract class BaseActivity : AppCompatActivity() {
         setNavigationBarColor(ResourceUtil.getThemedColor(this, R.attr.paper_color))
         maybeShowLoggedOutInBackgroundDialog()
 
-        Prefs.setLocalClassName(localClassName)
+        Prefs.localClassName = localClassName
     }
 
     override fun onDestroy() {
@@ -119,8 +117,6 @@ abstract class BaseActivity : AppCompatActivity() {
         unregisterExclusiveBusMethods()
         EXCLUSIVE_BUS_METHODS = exclusiveBusMethods
         EXCLUSIVE_DISPOSABLE = WikipediaApp.getInstance().bus.subscribe(EXCLUSIVE_BUS_METHODS!!)
-
-        Prefs.crashedBeforeActivityCreated(false)
     }
 
     override fun applyOverrideConfiguration(configuration: Configuration) {
@@ -160,7 +156,11 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        dismissCurrentTooltip()
+        if (event.actionMasked == MotionEvent.ACTION_DOWN ||
+                event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+            dismissCurrentTooltip()
+        }
+
         imageZoomHelper?.let {
             return it.onDispatchTouchEvent(event) || super.dispatchTouchEvent(event)
         }
@@ -174,12 +174,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     protected fun setNavigationBarColor(@ColorInt color: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val isDarkThemeOrDarkBackground = (WikipediaApp.getInstance().currentTheme.isDark ||
-                    color == ContextCompat.getColor(this, android.R.color.black))
-            window.navigationBarColor = color
-            window.decorView.systemUiVisibility = if (isDarkThemeOrDarkBackground) window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv() else View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or window.decorView.systemUiVisibility
-        }
+        DeviceUtil.setNavigationBarColor(window, color)
     }
 
     protected open fun setTheme() {
@@ -241,13 +236,13 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun maybeShowLoggedOutInBackgroundDialog() {
-        if (Prefs.wasLoggedOutInBackground()) {
-            Prefs.setLoggedOutInBackground(false)
+        if (Prefs.loggedOutInBackground) {
+            Prefs.loggedOutInBackground = false
             AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setTitle(R.string.logged_out_in_background_title)
                     .setMessage(R.string.logged_out_in_background_dialog)
-                    .setPositiveButton(R.string.logged_out_in_background_login) { _: DialogInterface?, _: Int -> startActivity(LoginActivity.newIntent(this@BaseActivity, LoginFunnel.SOURCE_LOGOUT_BACKGROUND)) }
+                    .setPositiveButton(R.string.logged_out_in_background_login) { _, _ -> startActivity(LoginActivity.newIntent(this@BaseActivity, LoginFunnel.SOURCE_LOGOUT_BACKGROUND)) }
                     .setNegativeButton(R.string.logged_out_in_background_cancel, null)
                     .show()
         }
@@ -266,6 +261,8 @@ abstract class BaseActivity : AppCompatActivity() {
     fun setImageZoomHelper() {
         imageZoomHelper = ImageZoomHelper(this)
     }
+
+    open fun onUnreadNotification() { }
 
     /**
      * Bus consumer that should be registered by all created activities.
@@ -297,9 +294,15 @@ abstract class BaseActivity : AppCompatActivity() {
             } else if (event is LoggedOutInBackgroundEvent) {
                 maybeShowLoggedOutInBackgroundDialog()
             } else if (event is ReadingListSyncEvent) {
-                if (event.showMessage && !Prefs.isSuggestedEditsHighestPriorityEnabled()) {
+                if (event.showMessage && !Prefs.isSuggestedEditsHighestPriorityEnabled) {
                     FeedbackUtil.makeSnackbar(this@BaseActivity,
                             getString(R.string.reading_list_toast_last_sync), FeedbackUtil.LENGTH_DEFAULT).show()
+                }
+            } else if (event is UnreadNotificationsEvent) {
+                runOnUiThread {
+                    if (!isDestroyed) {
+                        onUnreadNotification()
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package org.wikipedia.bridge
 
 import android.content.Context
+import kotlinx.serialization.Serializable
 import org.wikipedia.BuildConfig
 import org.wikipedia.R
 import org.wikipedia.WikipediaApp
@@ -19,37 +20,30 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object JavaScriptActionHandler {
-    @JvmStatic
     fun setTopMargin(top: Int): String {
         return String.format(Locale.ROOT, "pcs.c1.Page.setMargins({ top:'%dpx', right:'%dpx', bottom:'%dpx', left:'%dpx' })", top + 16, 16, 48, 16)
     }
 
-    @JvmStatic
     fun getTextSelection(): String {
         return "pcs.c1.InteractionHandling.getSelectionInfo()"
     }
 
-    @JvmStatic
     fun getOffsets(): String {
         return "pcs.c1.Sections.getOffsets(document.body);"
     }
 
-    @JvmStatic
     fun getSections(): String {
         return "pcs.c1.Page.getTableOfContents()"
     }
 
-    @JvmStatic
     fun getProtection(): String {
         return "pcs.c1.Page.getProtection()"
     }
 
-    @JvmStatic
     fun getRevision(): String {
         return "pcs.c1.Page.getRevision();"
     }
 
-    @JvmStatic
     fun expandCollapsedTables(expand: Boolean): String {
         return "pcs.c1.Page.expandOrCollapseTables($expand);" +
                 "var hideableSections = document.getElementsByClassName('pcs-section-hideable-header'); " +
@@ -58,12 +52,10 @@ object JavaScriptActionHandler {
                 "}"
     }
 
-    @JvmStatic
     fun scrollToFooter(context: Context): String {
         return "window.scrollTo(0, document.getElementById('pcs-footer-container-menu').offsetTop - ${DimenUtil.getNavigationBarHeight(context)});"
     }
 
-    @JvmStatic
     fun scrollToAnchor(anchorLink: String): String {
         val anchor = if (anchorLink.contains("#")) anchorLink.substring(anchorLink.indexOf("#") + 1) else anchorLink
         return "var el = document.getElementById('$anchor');" +
@@ -73,20 +65,23 @@ object JavaScriptActionHandler {
                 "}, 250);"
     }
 
-    @JvmStatic
     fun prepareToScrollTo(anchorLink: String, highlight: Boolean): String {
         return "pcs.c1.Page.prepareForScrollToAnchor(\"${anchorLink.replace("\"", "\\\"")}\", { highlight: $highlight } )"
     }
 
-    @JvmStatic
     fun setUp(context: Context, title: PageTitle, isPreview: Boolean, toolbarMargin: Int): String {
         val app: WikipediaApp = WikipediaApp.getInstance()
         val topActionBarHeight = if (isPreview) 0 else DimenUtil.roundedPxToDp(toolbarMargin.toFloat())
         val res = L10nUtil.getStringsForArticleLanguage(title, intArrayOf(R.string.description_edit_add_description,
                 R.string.table_infobox, R.string.table_other, R.string.table_close))
         val leadImageHeight = if (isPreview) 0 else
-            (if (DimenUtil.isLandscape(context) || !Prefs.isImageDownloadEnabled()) 0 else (leadImageHeightForDevice(context) / densityScalar).roundToInt() - topActionBarHeight)
+            (if (DimenUtil.isLandscape(context) || !Prefs.isImageDownloadEnabled) 0 else (leadImageHeightForDevice(context) / densityScalar).roundToInt() - topActionBarHeight)
         val topMargin = topActionBarHeight + 16
+
+        var fontFamily = Prefs.fontFamily
+        if (fontFamily == context.getString(R.string.font_family_serif)) {
+            fontFamily = "'Linux Libertine',Georgia,Times,serif"
+        }
 
         return String.format(Locale.ROOT, "{" +
                 "   \"platform\": \"android\"," +
@@ -98,23 +93,22 @@ object JavaScriptActionHandler {
                 "       \"tableClose\": \"${res[R.string.table_close]}\"" +
                 "   }," +
                 "   \"theme\": \"${app.currentTheme.funnelName}\"," +
-                "   \"bodyFont\": \"${Prefs.getFontFamily()}\"," +
-                "   \"dimImages\": ${(app.currentTheme.isDark && Prefs.shouldDimDarkModeImages())}," +
+                "   \"bodyFont\": \"$fontFamily\"," +
+                "   \"dimImages\": ${(app.currentTheme.isDark && Prefs.dimDarkModeImages)}," +
                 "   \"margins\": { \"top\": \"%dpx\", \"right\": \"%dpx\", \"bottom\": \"%dpx\", \"left\": \"%dpx\" }," +
                 "   \"leadImageHeight\": \"%dpx\"," +
-                "   \"areTablesInitiallyExpanded\": ${!Prefs.isCollapseTablesEnabled()}," +
+                "   \"areTablesInitiallyExpanded\": ${!Prefs.isCollapseTablesEnabled}," +
                 "   \"textSizeAdjustmentPercentage\": \"100%%\"," +
-                "   \"loadImages\": ${Prefs.isImageDownloadEnabled()}," +
-                "   \"userGroups\": \"${AccountUtil.groups}\"" +
+                "   \"loadImages\": ${Prefs.isImageDownloadEnabled}," +
+                "   \"userGroups\": \"${AccountUtil.groups}\"," +
+                "   \"isEditable\": ${!Prefs.readingFocusModeEnabled}" +
                 "}", topMargin, 16, 48, 16, leadImageHeight)
     }
 
-    @JvmStatic
     fun setUpEditButtons(isEditable: Boolean, isProtected: Boolean): String {
         return "pcs.c1.Page.setEditButtons($isEditable, $isProtected)"
     }
 
-    @JvmStatic
     fun setFooter(model: PageViewModel): String {
         if (model.page == null) {
             return ""
@@ -147,7 +141,6 @@ object JavaScriptActionHandler {
                 "})"
     }
 
-    @JvmStatic
     fun mobileWebChromeShim(): String {
         return "(function() {" +
                 "let style = document.createElement('style');" +
@@ -156,7 +149,6 @@ object JavaScriptActionHandler {
                 "})();"
     }
 
-    @JvmStatic
     fun getElementAtPosition(x: Int, y: Int): String {
         return "(function() {" +
                 "  let element = document.elementFromPoint($x, $y);" +
@@ -170,6 +162,14 @@ object JavaScriptActionHandler {
                 "})();"
     }
 
-    data class ImageHitInfo(val left: Float = 0f, val top: Float = 0f, val width: Float = 0f, val height: Float = 0f,
-                            val src: String = "", val centerCrop: Boolean = false)
+    fun pauseAllMedia(): String {
+        return "(function() {" +
+                "var elements = document.getElementsByTagName('audio');" +
+                "for(i=0; i<elements.length; i++) elements[i].pause();" +
+                "})();"
+    }
+
+    @Serializable
+    class ImageHitInfo(val left: Float = 0f, val top: Float = 0f, val width: Float = 0f, val height: Float = 0f,
+                       val src: String = "", val centerCrop: Boolean = false)
 }

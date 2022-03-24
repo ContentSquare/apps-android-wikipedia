@@ -32,6 +32,7 @@
 * Mouse21
 * Movses
 * MuratTheTurkish
+* Natalilake
 * Nitch
 * Nzeemin
 * Oashnic
@@ -50,7 +51,9 @@
 * Soul Train
 * Staspotanin2
 * Stjn
+* Tanzun
 * Teretalexev
+* Thothsum
 * ToJack
 * VitalKanev
 * Vlad5250
@@ -95,6 +98,10 @@
   <string name="app_settings">Настройки приложения</string>
   <string name="search_tab_tooltip">Нажмите на иконку снова, чтобы начать ввод поискового запроса.</string>
   <string name="history_list_title">История</string>
+  <string name="image_content_description">Изображение: %s</string>
+  <string name="page_content_description">Страница: %s</string>
+  <string name="wikimedia_commons">Викисклад</string>
+  <string name="wikidata">Викиданные</string>
   <string name="dialog_title_clear_history">Очистить историю просмотров</string>
   <string name="dialog_message_clear_history">Будет удалена вся история посещения страниц и закрыты все открытые вкладки. Продолжить?</string>
   <string name="dialog_message_clear_history_yes">Да</string>
@@ -102,12 +109,17 @@
   <string name="share_via">Поделиться...</string>
   <string name="image_share_via">Поделиться через</string>
   <string name="search_redirect_from">Перенаправлено с %s</string>
+  <string name="page_edit_history_activity_title">История изменений: %s</string>
+  <string name="page_edit_history_minor_edit">&lt;b&gt;м&lt;/b&gt; %s</string>
   <string name="menu_page_show_tabs">Показать вкладки</string>
   <string name="menu_page_other_languages">Изменить язык</string>
   <string name="menu_page_find_in_page">Найти в статье</string>
   <string name="menu_page_add_to_watchlist">Добавить в список наблюдения</string>
+  <string name="menu_page_watch">Следить</string>
   <string name="menu_page_view_talk">Смотреть страницу обсуждения</string>
+  <string name="menu_page_talk_page">Страница обсуждения</string>
   <string name="menu_page_view_edit_history">Смотреть историю изменений</string>
+  <string name="menu_page_edit_history">История правок</string>
   <string name="menu_page_remove_from_watchlist">Удалить из списка наблюдения</string>
   <string name="edit_section_find_in_page">Найти на странице</string>
   <string name="menu_page_font_and_theme">Шрифт и тема оформления</string>
@@ -116,6 +128,8 @@
   <string name="feed_card_add_to_list">Добавить в список для чтения</string>
   <string name="feed_card_add_to_default_list">Сохранить</string>
   <string name="menu_page_share">Поделиться ссылкой</string>
+  <string name="menu_article_share">Поделиться статьёй</string>
+  <string name="menu_page_article_share">Поделиться</string>
   <string name="menu_page_open_a_new_tab">Открыть новую вкладку</string>
   <string name="menu_page_new_tab">Новая вкладка</string>
   <string name="menu_page_reading_lists">Списки для чтения</string>
@@ -202,10 +216,11 @@
   <string name="dialog_create_account_checking_progress">Проверка</string>
   <string name="create_account_email_hint">Адрес электронной почты (необязательно)</string>
   <string name="create_account_password_repeat_hint">Повторите пароль</string>
+  <string name="create_account_password_is_username">Пароль не может совпадать с именем учётной записи</string>
   <string name="create_account_passwords_mismatch_error">Пароли не совпадают</string>
   <string name="create_account_email_error">Недопустимый адрес электронной почты</string>
   <string name="create_account_username_error">Недопустимые символы в имени участника</string>
-  <string name="create_account_password_error">Некорректный пароль</string>
+  <string name="create_account_password_error">Пароль должен состоять не менее чем из 8 символов.</string>
   <string name="create_account_generic_error">Невозможно создать учётную запись</string>
   <string name="create_account_next">Далее</string>
   <string name="email_recommendation_dialog_title">Создать учётную запись без электронной почты?</string>
@@ -219,6 +234,7 @@
   <string name="create_account_ip_block_help_url">https://ru.wikipedia.org/wiki/Википедия:Блокировки</string>
   <string name="create_account_ip_block_details">Подробности</string>
   <string name="preferences_general_heading">Общие</string>
+  <string name="preferences_account_heading">Учётная запись</string>
   <string name="wikipedia_app_faq">Частые вопросы о приложении «Википедия»</string>
   <string name="send_feedback">Обратная связь</string>
   <string name="create_account_account_created_toast">Учётная запись создана!</string>
@@ -292,6 +308,7 @@
   <string name="edit_summary_tag_other_hint">Другие способы, которыми вы улучшили страницу</string>
   <string name="edit_conflict_title">Конфликт редактирования</string>
   <string name="edit_conflict_message">Возник конфликт редактирования, так как страница уже была изменена другим участником. Скопируйте свои изменения, вернитесь и обновите страницу, а затем повторите попытку редактирования.</string>
+  <string name="edit_notices_please_read">Пожалуйста, прочтите перед редактированием</string>
   <string name="find_next">Найти далее</string>
   <string name="find_previous">Найти ранее</string>
   <string name="find_first_occurence">Это первое совпадение</string>
@@ -450,6 +467,9 @@
   <string name="text_size_decrease">Уменьшить размер шрифта</string>
   <string name="text_size_percent_default">%s (по умолчанию)</string>
   <string name="text_style_title">Шрифт</string>
+  <string name="theme_category_reading">Чтение</string>
+  <string name="theme_category_toolbar">Панель инструментов</string>
+  <string name="theme_customize_toolbar">Настроить панель инструментов</string>
   <string name="nav_item_saved">Сохранено</string>
   <string name="reading_list_save_to">Добавить в список для чтения</string>
   <string name="reading_list_move_to">Перенести в список для чтения</string>
@@ -592,10 +612,12 @@
   <string name="reading_list_split_dialog_ok_button_text">ОК</string>
   <string name="user_option_sync_label">Настройки</string>
   <string name="notification_reverted_title">Отменённая правка</string>
+  <string name="notification_channel_title">Скачивание статей</string>
   <string name="notification_channel_description">Прогресс загрузки</string>
   <string name="notification_syncing_pause_button">Пауза</string>
   <string name="notification_syncing_resume_button">Продолжить</string>
   <string name="notification_syncing_cancel_button">Отмена</string>
+  <string name="notification_syncing_reading_list_channel_title">Синхронизация списков для чтения</string>
   <string name="notification_syncing_reading_list_channel_description">Статус синхронизации списков чтения</string>
   <string name="notification_many_unread">У вас %d непрочитанных уведомлений</string>
   <plurals name="notification_channel_name">
@@ -655,6 +677,21 @@
   <string name="notifications_view_archived_button_text">Просмотр архива уведомления</string>
   <string name="notification_preferences_title">Настройки уведомлений</string>
   <string name="notifications_mark_unread">Отметить как непрочитанное</string>
+  <string name="notifications_mark_all_as_read">Отметить все как прочитанные</string>
+  <string name="notifications_direct_reply_action">Ответить</string>
+  <string name="notifications_direct_reply_success">Ответ опубликован.</string>
+  <plurals name="notifications_mark_as_read_plural">
+    <item quantity="one">%d отмечено как прочитанное</item>
+    <item quantity="few">%d отмечены как прочитанные</item>
+    <item quantity="many">%d отмечены как прочитанные</item>
+    <item quantity="other">%d отмечены как прочитанные</item>
+  </plurals>
+  <plurals name="notifications_mark_as_unread_plural">
+    <item quantity="one">%d отмечено как прочитанное</item>
+    <item quantity="few">%d отмечены как прочитанные</item>
+    <item quantity="many">%d отмечены как прочитанные</item>
+    <item quantity="other">%d отмечены как прочитанные</item>
+  </plurals>
   <string name="watchlist_title">Список наблюдения</string>
   <string name="preference_title_notification_poll">Извещения об опросах</string>
   <string name="preference_summary_notification_poll">Позволяет приложению использовать данные для проверки новых уведомлений в фоне.</string>
@@ -672,7 +709,37 @@
   <string name="preference_title_notification_mention">Упоминания вас</string>
   <string name="preference_summary_notification_mention">Кто-то упомянул вас на странице</string>
   <string name="preference_title_notification_user_talk">На страницах обсуждений</string>
-  <string name="preference_summary_notification_user_talk">Сообщения со страниц обсуждения</string>
+  <string name="preference_summary_notification_user_talk">Сообщения и ответы со страниц обсуждения</string>
+  <string name="preference_title_notification_email_user">Получение писем</string>
+  <string name="preference_summary_notification_email_user">Кто-то отправил вам электронное письмо через вики</string>
+  <string name="preference_title_notification_user_rights">Изменения прав участника</string>
+  <string name="preference_summary_notification_user_rights">Получаются при изменении ваших прав участника</string>
+  <string name="preference_title_notification_article_linked">Ссылки на созданные вами статьи</string>
+  <string name="preference_summary_notification_article_linked">Получаются, когда создаётся новая ссылка на созданную вами страницу</string>
+  <string name="preference_category_push_notifications">Push-уведомления</string>
+  <string name="preference_title_customize_push_notifications">Настроить push-уведомления</string>
+  <string name="preference_category_display_settings">Настройки отображения</string>
+  <string name="preference_title_hide_read_notifications">Скрыть уведомления о прочтении</string>
+  <string name="notifications_channel_group_wikipedia_notifications_title">Википедия</string>
+  <string name="notifications_channel_group_wikipedia_notifications_description">Уведомления из Википедии</string>
+  <string name="notifications_channel_group_other_title">Прочие</string>
+  <string name="notifications_channel_group_other_description">Другие уведомления от приложения</string>
+  <string name="notifications_filter_label">Фильтровать уведомления</string>
+  <string name="notifications_filter_icon_content_description">Фильтровать уведомления</string>
+  <plurals name="notifications_number_of_filters">
+    <item quantity="one">%d фильтр</item>
+    <item quantity="few">%d фильтра</item>
+    <item quantity="many">%d фильтров</item>
+    <item quantity="other">%d фильтров</item>
+  </plurals>
+  <string name="notifications_select_all_filters">Выбрать все фильтры</string>
+  <string name="notifications_tab_filter_all">Все</string>
+  <string name="notifications_tab_filter_mentions">Упоминания</string>
+  <string name="notifications_search_bar_filter_hint">Фильтр уведомлений</string>
+  <string name="notifications_menu_mark_as_read">Пометить как прочитанное</string>
+  <string name="notifications_menu_mark_as_unread">Пометить как непрочитанное</string>
+  <string name="notifications_wiki_filter_header">Вики фильтр</string>
+  <string name="notifications_all_wikis_text">Все \"вики\"</string>
   <string name="view_because_you_read_card_title">На основе прочитанного</string>
   <string name="view_random_card_title">Рандомизатор</string>
   <string name="view_random_article_card_title">Случайная статья</string>
@@ -732,6 +799,7 @@
   <string name="feed_accessibility_card_text">Вы достигли конца ленты.</string>
   <string name="feed_accessibility_card_load_more_button">Загрузить ещё</string>
   <string name="top_read_activity_title">Самое читаемое %s</string>
+  <string name="tabs_activity_title">Вкладки</string>
   <string name="description_edit_text_hint">Описание статьи</string>
   <string name="description_edit_article_description_label">Статья</string>
   <string name="description_edit_translate_article_description_label_per_language">Описание статьи (%s)</string>
@@ -779,6 +847,9 @@
   <string name="description_edit_tutorial_keep_it_short_instructions">В идеале одна строка, от двух до двенадцати слов</string>
   <string name="description_edit_tutorial_button_label_start_editing">Начать редактирование</string>
   <string name="description_edit_tutorial_promise">Начав, я обещаю не злоупотреблять этой функцией.</string>
+  <string name="customize_toolbar_title">Настроить панель инструментов</string>
+  <string name="customize_toolbar_category_toolbar">Панель инструментов</string>
+  <string name="customize_toolbar_category_menu">Меню</string>
   <string name="suggested_edits_describe_articles">Описать статьи</string>
   <string name="suggested_edits_caption_images">Описание изображений</string>
   <string name="suggested_edits_tag_images">Тегирование изображений</string>
@@ -1064,6 +1135,7 @@
   <string name="talk_title">Обсуждение</string>
   <string name="talk_user_title">Обсуждение: %s</string>
   <string name="talk_new_topic">Новая тема</string>
+  <string name="talk_new_topic_submitted">Тема опубликована.</string>
   <string name="talk_page_empty">Эта страница обсуждения пустая.</string>
   <string name="talk_add_reply">Ответить</string>
   <string name="talk_no_subject">(Без темы)</string>
@@ -1072,18 +1144,37 @@
   <string name="talk_message_hint">Написать сообщение</string>
   <string name="talk_message_empty">Сообщение не может быть пустым.</string>
   <string name="talk_subject_empty">Тема не может быть пустой.</string>
+  <string name="talk_response_submitted">Ответ опубликован.</string>
+  <string name="talk_snackbar_undo">Отменить</string>
+  <string name="talk_last_modified">&lt;b&gt;Последняя правка сделана %1$s&lt;/b&gt; участником %2$s</string>
+  <string name="talk_snackbar_survey_text">Спасибо за использование страниц обсуждения. Не могли бы вы помочь нам улучшить приложение, приняв участие в опросе?</string>
+  <string name="talk_snackbar_survey_action_text">Начать</string>
+  <string name="talk_share_discussion_subject">Википедия — обсуждение в теме «%s»</string>
+  <string name="talk_share_talk_page">Википедия — страница обсуждения</string>
+  <string name="talk_search_hint">Искать сообщения</string>
+  <string name="talk_overflow_sort_by">Сортировать по</string>
+  <string name="talk_overflow_sort_date_published">Дата публикации</string>
+  <string name="talk_overflow_sort_topic_name">Название темы</string>
+  <string name="menu_option_share_talk_discussion">Поделиться обсуждением</string>
+  <string name="menu_option_share_talk_page">Поделиться страницей обсуждения</string>
   <string name="menu_option_share_edit">Поделиться правкой</string>
   <string name="menu_option_user_profile">Профиль %s</string>
   <string name="menu_option_user_contributions">Вклад участника %s</string>
+  <string name="menu_option_edit_source">Править код</string>
   <string name="watchlist_details_watching_label">Слежу</string>
   <string name="watchlist_details_watch_label">Следить</string>
+  <string name="watchlist_details_next_edit">Следующая правка</string>
+  <string name="watchlist_details_prev_edit">Предыдущая правка</string>
   <string name="thank_label">Благодарность</string>
-  <string name="go_to_user_page">Перейти на страницу пользователя</string>
+  <string name="view_user_page">Просмотреть страницу участника</string>
   <string name="thank_dialog_title_text">Публично отправить \'Спасибо\'</string>
   <string name="thank_dialog_text">\'Спасибо\' - это простой способ выразить признательность редактору Википедии за его работу. \'Спасибо\' нельзя отменить и оно отображается публично.</string>
   <string name="thank_dialog_positive_button_text">Отправить благодарность</string>
   <string name="thank_dialog_negative_button_text">Отмена</string>
   <string name="thank_success_message">Ваше \"Спасибо\" отправлено участнику %s 👍</string>
+  <string name="menu_option_view_user_profile">Посмотреть страницу профиля пользователя</string>
+  <string name="menu_option_view_user_talk">Смотрите страницу обсуждения</string>
+  <string name="revision_compare_button">Сравнить</string>
   <string name="watchlist_page_add_to_watchlist_snackbar">Участник %1$s и его страница обсуждений добавлены в ваш список наблюдения %2$s.</string>
   <string name="watchlist_page_add_to_watchlist_snackbar_action">Изменить</string>
   <string name="watchlist_page_add_to_watchlist_snackbar_period_permanently">постоянно</string>
@@ -1106,4 +1197,7 @@
   <string name="watchlist_page_moved">Перемещено</string>
   <string name="watchlist_page_protected">Защищено</string>
   <string name="watchlist_page_deleted">Удалено</string>
+  <string name="action_item_categories">Категории</string>
+  <string name="category_tab_articles">Статьи</string>
+  <string name="category_tab_subcategories">Подкатегории</string>
 </resources>

@@ -5,7 +5,7 @@
         android:id="@+id/empty"
         android:icon="@drawable/ic_more_vert_themed_24dp"
         android:orderInCategory="101"
-        android:title=""
+        android:title="@string/abc_action_menu_overflow_description"
         app:showAsAction="always">
         <menu>
             <item
@@ -13,13 +13,9 @@
                 android:icon="@drawable/ic_share_material_secondary_themed"
                 android:title="@string/menu_option_share_edit" />
             <item
-                android:id="@+id/menu_user_profile_page"
-                android:icon="@drawable/ic_baseline_person_themed"
-                android:title="@string/menu_option_user_profile" />
-            <item
-                android:id="@+id/menu_user_contributions_page"
-                android:icon="@drawable/ic_icon_user_contributions_ooui"
-                android:title="@string/menu_option_user_contributions" />
+                android:id="@+id/menu_add_watchlist"
+                android:icon="@drawable/ic_star_24"
+                android:title="@string/menu_page_watch" />
         </menu>
     </item>
 </menu>

@@ -90,11 +90,6 @@
             android:title="@string/preference_key_visited_article_page"
             android:defaultValue="false" />
 
-        <SwitchPreferenceCompat
-            android:key="@string/preference_key_notification_show_all"
-            android:title="@string/preference_key_notification_show_all"
-            android:defaultValue="false" />
-
         <org.wikipedia.settings.LongPreference
             style="@style/LongPreference"
             android:key="@string/preference_key_page_last_shown"
@@ -147,8 +142,42 @@
 
         <org.wikipedia.settings.EditTextAutoSummarizePreference
             style="@style/DataStringPreference"
+            android:key="@string/preference_key_customize_toolbar_order"
+            android:title="@string/preference_key_customize_toolbar_order" />
+
+        <org.wikipedia.settings.EditTextAutoSummarizePreference
+            style="@style/DataStringPreference"
+            android:key="@string/preference_key_customize_toolbar_menu_order"
+            android:title="@string/preference_key_customize_toolbar_menu_order" />
+
+        <org.wikipedia.settings.EditTextAutoSummarizePreference
+            style="@style/DataStringPreference"
             android:key="@string/preference_key_remote_notifications_seen_time"
             android:title="@string/preference_key_remote_notifications_seen_time" />
+
+        <SwitchPreferenceCompat
+            android:key="@string/preference_key_anon_user_has_notification"
+            android:title="@string/preference_key_anon_user_has_notification" />
+
+        <org.wikipedia.settings.LongPreference
+            style="@style/LongPreference"
+            android:key="@string/preference_key_last_anon_edit_time"
+            android:title="@string/preference_key_last_anon_edit_time" />
+
+        <org.wikipedia.settings.LongPreference
+            style="@style/LongPreference"
+            android:key="@string/preference_key_last_anon_notification_time"
+            android:title="@string/preference_key_last_anon_notification_time" />
+
+        <org.wikipedia.settings.EditTextAutoSummarizePreference
+            style="@style/DataStringPreference"
+            android:key="@string/preference_key_last_anon_notification_lang"
+            android:title="@string/preference_key_last_anon_notification_lang" />
+
+        <org.wikipedia.settings.EditTextAutoSummarizePreference
+            style="@style/DataStringPreference"
+            android:key="@string/preference_key_last_anon_user_with_messages"
+            android:title="@string/preference_key_last_anon_user_with_messages" />
 
         <Preference
             android:key="@string/preference_developer_clear_all_talk_topics"
@@ -190,8 +219,8 @@
             android:title="@string/preference_key_description_edit_tutorial_enabled" />
 
         <SwitchPreferenceCompat
-            android:key="@string/preference_key_multilingual_search_tutorial_enabled"
-            android:title="@string/preference_key_multilingual_search_tutorial_enabled" />
+            android:key="@string/preference_key_multilingual_search_tooltip_shown"
+            android:title="@string/preference_key_multilingual_search_tooltip_shown" />
 
         <SwitchPreferenceCompat
             android:key="@string/preference_key_reading_list_sync_reminder_enabled"
@@ -200,6 +229,11 @@
         <SwitchPreferenceCompat
             android:key="@string/preference_key_reading_list_login_reminder_enabled"
             android:title="@string/preference_key_reading_list_login_reminder_enabled" />
+
+        <org.wikipedia.settings.IntPreference
+            style="@style/IntPreference"
+            android:key="@string/preference_key_logged_in_page_activity_visit_count"
+            android:title="@string/preference_key_logged_in_page_activity_visit_count" />
 
         <org.wikipedia.settings.IntPreference
             style="@style/IntPreference"
@@ -247,6 +281,26 @@
             android:key="@string/preference_key_watchlist_main_onboarding_tooltip_shown"
             android:title="@string/preference_key_watchlist_main_onboarding_tooltip_shown" />
 
+        <SwitchPreferenceCompat
+            android:key="@string/preference_key_edit_notices_tooltip_shown"
+            android:title="@string/preference_key_edit_notices_tooltip_shown" />
+
+        <SwitchPreferenceCompat
+            android:key="@string/preference_key_show_edit_talk_page_source_prompt"
+            android:title="@string/preference_key_show_edit_talk_page_source_prompt" />
+
+        <SwitchPreferenceCompat
+            android:key="@string/preference_key_show_search_tab_tooltip"
+            android:title="@string/preference_key_show_search_tab_tooltip" />
+
+        <SwitchPreferenceCompat
+            android:key="@string/preference_key_customize_toolbar_tooltip"
+            android:title="@string/preference_key_customize_toolbar_tooltip" />
+
+        <SwitchPreferenceCompat
+            android:key="@string/preference_key_push_notification_options_set"
+            android:title="@string/preference_key_push_notification_options_set" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/preferences_developer_reading_list_category">
@@ -291,10 +345,6 @@
             android:key="@string/preference_key_show_suggested_edits_tooltip"
             android:title="@string/preference_key_show_suggested_edits_tooltip" />
 
-        <SwitchPreferenceCompat
-            android:key="@string/preference_key_show_edit_tasks_onboarding"
-            android:title="@string/preference_key_show_edit_tasks_onboarding" />
-
         <org.wikipedia.settings.EditTextAutoSummarizePreference
             style="@style/DataStringPreference"
             android:key="@string/preference_key_suggested_edits_pause_date"
@@ -334,10 +384,6 @@
             android:key="@string/preference_key_show_sequential_user_stats_tooltip"
             android:title="@string/preference_key_show_sequential_user_stats_tooltip" />
 
-        <SwitchPreferenceCompat
-            android:key="@string/preference_key_show_search_tab_tooltip"
-            android:title="@string/preference_key_show_search_tab_tooltip" />
-
         <Preference
             android:key="@string/preferences_developer_suggested_edits_reactivation_notification_stage_one"
             android:title="@string/preferences_developer_suggested_edits_reactivation_notification_stage_one"/>
@@ -347,7 +393,12 @@
             android:title="@string/preferences_developer_suggested_edits_reactivation_notification_stage_two"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="A/B tests">
+    <PreferenceCategory android:title="Tests and surveys">
+
+        <org.wikipedia.settings.IntPreference
+            style="@style/IntPreference"
+            android:key="ab_test_notificationIcons"
+            android:title="Test group for in-app Notification icons (0, 1, or 2)" />
 
     </PreferenceCategory>
 

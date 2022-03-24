@@ -18,20 +18,20 @@ import org.wikipedia.readinglist.LongPressMenu
 import org.wikipedia.util.DeviceUtil.hideSoftKeyboard
 import org.wikipedia.util.UriUtil.isValidPageLink
 
-class LongPressHandler(view: View, private val historySource: Int, private val callback: LongPressMenu.Callback) : OnCreateContextMenuListener, OnTouchListener {
+class LongPressHandler(
+    view: View,
+    private val historySource: Int,
+    private val callback: LongPressMenu.Callback,
+    private var title: PageTitle? = null
+) : OnCreateContextMenuListener, OnTouchListener {
     interface WebViewMenuCallback : LongPressMenu.Callback {
         val wikiSite: WikiSite?
         val referrer: String?
     }
 
     private var referrer: String? = null
-    private var title: PageTitle? = null
     private var clickPositionX = 0f
     private var clickPositionY = 0f
-
-    constructor(view: View, pageTitle: PageTitle, historySource: Int, callback: LongPressMenu.Callback) : this(view, historySource, callback) {
-        title = pageTitle
-    }
 
     init {
         view.setOnCreateContextMenuListener(this)
@@ -48,7 +48,7 @@ class LongPressHandler(view: View, private val historySource: Int, private val c
                     var wikiSite = WikiSite(uri)
                     // the following logic keeps the correct language code if the domain has multiple variants (e.g. zh).
                     (callback as WebViewMenuCallback).wikiSite?.run {
-                        if (wikiSite.dbName() == dbName() && wikiSite.languageCode() != languageCode()) {
+                        if (wikiSite.dbName() == dbName() && wikiSite.languageCode != languageCode) {
                             wikiSite = this
                         }
                     }

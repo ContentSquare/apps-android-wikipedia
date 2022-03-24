@@ -56,7 +56,7 @@ abstract class OkHttpWebViewClient : WebViewClient() {
                     rsp.body!!.contentType()!!.charset(Charset.defaultCharset())!!.name(),
                     rsp.code,
                     rsp.message.ifBlank { "Unknown error" },
-                    toMap(addResponseHeaders(rsp.headers)),
+                    addResponseHeaders(rsp.headers).toMap(),
                     getInputStream(rsp))
             }
         } catch (e: Exception) {
@@ -79,13 +79,13 @@ abstract class OkHttpWebViewClient : WebViewClient() {
     @Throws(IOException::class)
     private fun request(request: WebResourceRequest): Response {
         val builder = Request.Builder().url(request.url.toString()).cacheControl(model.cacheControl)
-        for (header in request.requestHeaders.keys) {
+        for ((header, value) in request.requestHeaders) {
             if (header == "If-None-Match" || header == "If-Modified-Since") {
                 // Strip away conditional headers from the request coming from the WebView, since
                 // we want control of caching for ourselves (it can break OkHttp's caching internals).
                 continue
             }
-            request.requestHeaders[header]?.let {
+            value?.let {
                 builder.header(header, it)
             }
         }
@@ -99,7 +99,7 @@ abstract class OkHttpWebViewClient : WebViewClient() {
             if (model.isInReadingList) {
                 builder.header(OfflineCacheInterceptor.SAVE_HEADER, OfflineCacheInterceptor.SAVE_HEADER_SAVE)
             }
-            builder.header(OfflineCacheInterceptor.LANG_HEADER, title.wikiSite.languageCode())
+            builder.header(OfflineCacheInterceptor.LANG_HEADER, title.wikiSite.languageCode)
             builder.header(OfflineCacheInterceptor.TITLE_HEADER, UriUtil.encodeURL(title.prefixedText))
             model.curEntry?.referrer?.let { referrer ->
                 if (referrer.isNotEmpty()) {
@@ -118,14 +118,6 @@ abstract class OkHttpWebViewClient : WebViewClient() {
     private fun addResponseHeaders(headers: Headers): Headers {
         // add CORS header to allow requests from all domains.
         return headers.newBuilder().set("Access-Control-Allow-Origin", "*").build()
-    }
-
-    private fun toMap(headers: Headers): Map<String, String> {
-        val map = mutableMapOf<String, String>()
-        for (i in 0 until headers.size) {
-            map[headers.name(i)] = headers.value(i)
-        }
-        return map
     }
 
     private fun getInputStream(rsp: Response): InputStream? {

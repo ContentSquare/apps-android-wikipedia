@@ -37,6 +37,9 @@
   <string name="app_settings">Приложене оттамаш</string>
   <string name="search_tab_tooltip">Юха а тоӀабе иконка тӀа, хье лаха лаьрхӀа волаш дола хӀама Ӏочуязде дӀаволалургволаш.</string>
   <string name="history_list_title">Тархьар</string>
+  <string name="image_content_description">Сурт: %s</string>
+  <string name="wikimedia_commons">Викиларма</string>
+  <string name="wikidata">Викидараш</string>
   <string name="dialog_title_clear_history">ЦIенде хьалха даь хьажараш</string>
   <string name="dialog_message_clear_history">Iа хьалха хьа мел йийла хинна оагIонаш дIяргья исторе чура, еррига вкладкаш а дIакъовлалургья. ДIахо дIаяхийтта вай?</string>
   <string name="dialog_message_clear_history_yes">XӀаъу</string>
@@ -98,7 +101,7 @@
   <string name="search_reading_lists_no_results">Цхьаккха а хӀама корадинзар еша лаьрхӀа йолча оагӀоний мугӀамаш чу</string>
   <string name="search_history_no_results">Цхьаккха а хӀама корадинзар тархьара чу</string>
   <string name="edit_section_captcha_message">Ши-шегӀа хулача спамах тхо лоралургдолаш лохе гойташ дола дешаш Ӏочуязде</string>
-  <string name="edit_section_captcha_request_an_account_message">Гаций хьона CAPTCHA сурташ? &lt;a href=\"https://en.wikipedia.org/wiki/Wikipedia:Request_an_account\"&gt;ДӀадéха дагара йоазув&lt;/a&gt;</string>
+  <string name="edit_section_captcha_request_an_account_message">Гаций хьона CAPTCHA сурташ? &lt;a href=\"https://en.wikipedia.org/wiki/Wikipedia:Request_an_account\"&gt;ДӀаéха аккаунт&lt;/a&gt;</string>
   <string name="edit_section_captcha_hint">Ӏоязде лакхе гойташ дола дешаш</string>
   <string name="title_captcha">Ӏочузъе CAPTCHA</string>
   <string name="edit_section_captcha_reload">ӀотӀатоӀабе CAPTCHA йолча из кердайоаккхаргйолаш</string>
@@ -107,17 +110,17 @@
   <string name="login_password_hint">Пароль</string>
   <string name="account_creation_password_hint">Пароль</string>
   <string name="login_2fa_hint">Шинфактора аутентификацен код</string>
-  <string name="login_2fa_other_workflow_error_msg">Шинфакторцара аутентификаци я эшаш! Дехар да, укх чура хьай керттерча гӀулакхага юха а вахе, 2FA-токенца ражача чувала, тӀаккха кхы цхьаькхазза гӀорта.</string>
+  <string name="login_2fa_other_workflow_error_msg">Ши фактор йола аутентификаци я эшаш! Дехар да, укх чура хьай керттерча гӀулакхага юха а вахе, 2FA-токенца чувала система чу, тӀаккха хье де ваьлар кхы цхьаькхазза де хьажа.</string>
   <string name="onboarding_card_login">Чувáла</string>
   <string name="page_editing_login">Чувáла</string>
   <string name="reading_lists_sync_login">Чувáла</string>
   <string name="create_account_login">Чувáла</string>
   <string name="menu_login">Чувáла</string>
   <string name="login_activity_title">Чувáла</string>
-  <string name="login_in_progress_dialog_message">Ражача чувалар</string>
-  <string name="login_success_toast">Ражача чувалар кхоачашдаьд!</string>
+  <string name="login_in_progress_dialog_message">Системача чувалар...</string>
+  <string name="login_success_toast">Система чу чувалар кхоачашдаьд!</string>
   <string name="reset_password_title">ДӀаоттае хьай пароль</string>
-  <string name="reset_password_description">Ший оттаья ха йолча паролаца хьавайзийтав Ӏа хье. Ражача чувалар кхоачашдергдолаш керда пароль дӀаоттае.</string>
+  <string name="reset_password_description">Ший хаьдда ха йола парол чу а язъяь хьавовзийтав Ӏа хье. Система чу чувалар кхоачашдергдолаш керда пароль дӀаоттае.</string>
   <string name="reset_password_hint">Керда пароль</string>
   <string name="reset_password_button">ДӀа а яздаь чувáла</string>
   <string name="preference_title_logout">Аравала</string>
@@ -125,7 +128,7 @@
   <string name="logout_prompt">Массайолча устройстваш чу хьай дагара йоазона чура араваргва хьо. Боккъонца безам бий хьа из де?</string>
   <string name="logout_dialog_cancel_button_text">А</string>
   <string name="logged_out_in_background_title">Хьо араваьннав дагара йоазона чура</string>
-  <string name="logged_out_in_background_dialog">Википеден дагара йоазона чура араваьннав хьо. Юха чувала лой хьона?</string>
+  <string name="logged_out_in_background_dialog">Википеден аккаунта чура араваьннав хьо. Юха чувала лой хьона?</string>
   <string name="logged_out_in_background_login">Чувáла</string>
   <string name="logged_out_in_background_cancel">Эшац</string>
   <string name="history_empty_title">Яц дукха ха йоаццаш хьийжа статьяш</string>
@@ -136,34 +139,35 @@
   <string name="delete_selected_items">ДӀаяха хьахержа йола элементаш</string>
   <string name="wp_stylized">&lt;big&gt;В&lt;/big&gt;ИКИПЕД&lt;big&gt;И&lt;/big&gt;</string>
   <string name="create_account_username_hint">Доакъашхочун цIи</string>
-  <string name="login_dont_have_account">Дагара йоазув деций хьога?</string>
+  <string name="login_dont_have_account">Аккаунт еций хьога?</string>
   <string name="login_join_wikipedia">ДӀахоттале Википедех</string>
   <string name="login_forgot_password">Пароль йицъеннай?</string>
   <string name="create_account_already_have">Аккаунт йолаш я?</string>
-  <string name="create_account_activity_title">Хьакхолла дагара йоазув</string>
+  <string name="create_account_activity_title">Аккаунт хьакхолла</string>
   <string name="dialog_create_account_checking_progress">Тахкар</string>
   <string name="create_account_email_hint">Электронни поштан цIай (ца хилча хIама дац)</string>
   <string name="create_account_password_repeat_hint">Юха а язъе пароль</string>
   <string name="create_account_passwords_mismatch_error">Паролеш вIашкайоагӀаш яц</string>
   <string name="create_account_email_error">Могадаьдоаца электронни поштан цIай</string>
   <string name="create_account_username_error">Доакъашхочун цӀера юкъе мегаргдоаца хьаракаш да</string>
-  <string name="create_account_password_error">Ишта пароль мегаш яц</string>
-  <string name="create_account_generic_error">ВӀаштехьа дац дагара йоазув (аккаунт) хьакхолла</string>
+  <string name="create_account_password_error">Пароль 8 фискал йолаш хила еза.</string>
+  <string name="create_account_generic_error">Аьттув бац аккаунт кхолла</string>
   <string name="create_account_next">ДӀахо</string>
-  <string name="email_recommendation_dialog_title">Электронни пошт а йоацаш хьакхоллий Ӏа дагара йоазув?</string>
+  <string name="email_recommendation_dialog_title">Электронни пошт а йоацаш кхоллий Ӏа аккаунт?</string>
   <string name="email_recommendation_dialog_message">Электронни пошт белгалъяр параз деце а, из Ӏочуязъяр&lt;b&gt;чӀоагӀа пайдане да&lt;/b&gt;, масала, хьай дагара йоазон пароль йицъелча из юха меттаоттаеш накъаяргья электронни пошт.</string>
   <string name="email_recommendation_message">Дика хургья, хӀана аьлча, аккаунт юха меттаоттаеш эшаргья электронни пошт.</string>
   <string name="email_recommendation_dialog_create_without_email_action">ДӀахо дӀаяхийта электронни пошт а йоацаш</string>
   <string name="email_recommendation_dialog_create_with_email_action">Электронни пошта цӀай тӀатоха</string>
-  <string name="create_account_button">Хьакхолла дагара йоазув</string>
+  <string name="create_account_button">Аккаунт хьакхолла</string>
   <string name="create_account_name_unavailable">Доакъашхочун цӀи \"%s\" мукъа яц. Дехар да, кхыйола цӀи Ӏочуязъе.</string>
   <string name="create_account_ip_block_message">Бехк ма баккхалахь, хьа IP-цӀай блок теха латт керда дагара йоазонаш (аккаунташ) хьакхоллалургдоацаш.</string>
   <string name="create_account_ip_block_help_url">https://ru.wikipedia.org/wiki/Википедия:Блокировки</string>
   <string name="create_account_ip_block_details">Цунах лаьца ма дарра</string>
   <string name="preferences_general_heading">Юкъара</string>
+  <string name="preferences_account_heading">Аккаунт</string>
   <string name="wikipedia_app_faq">«Википеди» приложенех лаьца каст-кастта тела хаттараш</string>
   <string name="send_feedback">Бувзам</string>
-  <string name="create_account_account_created_toast">Дагара йоазув хьакхеллад!</string>
+  <string name="create_account_account_created_toast">Аккаунт хьакхеллай!</string>
   <string name="preferences_heading_syncing">Синхронизаци</string>
   <string name="preferences_heading_data_usage">Трафик</string>
   <string name="preferences_heading_experimental">Экспериментальни</string>
@@ -217,7 +221,7 @@
   <string name="user_blocked_from_editing_title">Блок техай</string>
   <string name="user_logged_in_blocked_from_editing">Хьа аккаунта блок техай укх вики-проекта чу хувцамаш дергдоацаш.</string>
   <string name="user_anon_blocked_from_editing">Хьа IP-цӀайца хувцамаш дергдоацаш блок техай.</string>
-  <string name="edit_how_page_improved">МалагIа хувцам а баь тоаяьй оаш оагIув?</string>
+  <string name="edit_how_page_improved">Лоацца язде мишта (малагIа хувцам а баь) тоайир Ӏа оагӀув?</string>
   <string name="edit_next">ДӀахо</string>
   <string name="edit_done">ДӀаязде</string>
   <string name="edit_preview">Хьалххе бӀаргтохар</string>
@@ -331,7 +335,7 @@
   <string name="preference_summary_collapse_tables">Таблични блокаш, масала инфобоксаши комментареши белгалдаккхари, ши-шегӀа хьоарчаялийта.</string>
   <string name="nav_item_donate">Donate</string>
   <string name="error_voice_search_not_available">Оазаца хьадеш дола къамаьл фуд хар болх беш дац.</string>
-  <string name="location_service_disabled">Геолокацен гӀулакх дӀадоадаь да.</string>
+  <string name="location_service_disabled">Геолокацен гӀулакх дӀадоадаьд.</string>
   <string name="enable_location_service">Хьалсага</string>
   <string name="location_permissions_enable_prompt">Хье вола моттиг малагӀа я хар могаде, хьона гаьна доаццаш йола моттигаш гургйолаш.</string>
   <string name="location_permissions_enable_action">Хьалсага</string>
@@ -522,10 +526,12 @@
   <string name="reading_list_split_dialog_ok_button_text">ХӀАЪА</string>
   <string name="user_option_sync_label">Оттамаш</string>
   <string name="notification_reverted_title">Юхадаьккха тоадар</string>
+  <string name="notification_channel_title">Статьяш хьачуяхар</string>
   <string name="notification_channel_description">Чудаккхара прогресс</string>
   <string name="notification_syncing_pause_button">Пауза</string>
   <string name="notification_syncing_resume_button">ДӀахо дӀаяхийта</string>
   <string name="notification_syncing_cancel_button">Эшац</string>
+  <string name="notification_syncing_reading_list_channel_title">Ешаргйолаш дӀаехкача статьяй мугӀамий синхронизаци</string>
   <string name="notification_syncing_reading_list_channel_description">Дешара мугӀамашта еш йолча синхронизацен статус</string>
   <string name="notification_many_unread">Бийша боацаш %d хоам ба</string>
   <plurals name="notification_channel_name">
@@ -585,6 +591,21 @@
   <string name="notifications_view_archived_button_text">Хоамбара архивага хьажар</string>
   <string name="notification_preferences_title">Хоамбара оттамаш</string>
   <string name="notifications_mark_unread">Цадийшар морг белгалде</string>
+  <string name="notifications_mark_all_as_read">Дийшар морг белгалде</string>
+  <string name="notifications_direct_reply_action">Жоп ле</string>
+  <string name="notifications_direct_reply_progress">Жоп далар → %s…</string>
+  <string name="notifications_direct_reply_success">Жоп кепатехад.</string>
+  <string name="notifications_direct_reply_error">Жоп ши-шегӀа дӀадахийта вӀаштехьа даьланзар</string>
+  <string name="notifications_mark_all_as_read_message">%d белгалбаьб дийшар морг</string>
+  <string name="notifications_mark_all_as_unread_message">%d белгалбаьб цабийшар морг</string>
+  <plurals name="notifications_mark_as_read_plural">
+    <item quantity="one">1 белгалбаьб бийшар морг</item>
+    <item quantity="other">%d белгалбаьккхаб бийшар морг</item>
+  </plurals>
+  <plurals name="notifications_mark_as_unread_plural">
+    <item quantity="one">1 белгалбаьб цабийшар морг</item>
+    <item quantity="other">%d белгалбаьб цабийшар морг</item>
+  </plurals>
   <string name="watchlist_title">Зем</string>
   <string name="preference_title_notification_poll">Хоаттамех дола хоамаш</string>
   <string name="preference_summary_notification_poll">Приложенега дарех пайда эца йиш хулийт, керда хоам бáр фона тӀа тохкаргдолаш.</string>
@@ -602,7 +623,7 @@
   <string name="preference_title_notification_mention">Хьо хьоахавар</string>
   <string name="preference_summary_notification_mention">Цхьане оагӀона тӀа хьоахаваьв(-яьй) хьо</string>
   <string name="preference_title_notification_user_talk">Къамаьла оагӀонаш тӀа</string>
-  <string name="preference_summary_notification_user_talk">Къамаьла оагӀонаш тӀара дола хоамбар</string>
+  <string name="preference_summary_notification_user_talk">Къамаьла оагӀонаш тӀара дола хоамаши жопаши</string>
   <string name="view_because_you_read_card_title">Хьалха дийшачунга хьажжá</string>
   <string name="view_random_card_title">Рандомизатор</string>
   <string name="view_random_article_card_title">Ца ховш нийсъенна статья</string>
@@ -639,7 +660,7 @@
   <string name="view_featured_article_card_title">Хержа статья</string>
   <string name="view_static_card_save_button_label">ДӀайила</string>
   <string name="feed_configure_activity_title">Лентай оттамаш хувца</string>
-  <string name="feed_configure_menu_reset">Юхаметтаоттае луттаргаш юххьанцара хиннача тайпара</string>
+  <string name="feed_configure_menu_reset">Тхьовра хиннача тайпара хургдолаш юхахьаметтаоттае луттаргаш</string>
   <string name="feed_configure_menu_select_all">Дерригаш хьагойта</string>
   <string name="feed_configure_menu_deselect_all">Дерригаш дӀакъайладаха</string>
   <string name="feed_configure_language_warning">Лентай деррига карточкаш дац хьахьувкхаш массадолча меттала. Оттамашка дӀаоттаде йиш я малагӀча метта Википеден разделашкара карточкаш хьагойта деза.</string>
@@ -835,6 +856,11 @@
   <string name="suggested_edits_last_edited">ТӀехьара хувцам</string>
   <string name="suggested_edits_last_edited_never">ЦIаккха</string>
   <string name="suggested_edits_task_new">керда</string>
+  <string name="suggested_edits_cc0_notice">Iайха даь хувцамаш дIаяздарца хьо раьза хул &lt;a href=\"%1$s\" &gt;пайда эцара бехкамашта&lt;/a&gt;, цул совгIа раьза хул хьо &lt;a href=\"%2$s\"&gt;CCO яхача лицензех&lt;/a&gt; а дола юхадаккха вIаштIехьа хургдоацача кепатохарá.</string>
+  <string name="suggested_edits_reactivation_notification_title">Тоаде мегаш дар</string>
+  <string name="suggested_edits_reactivation_notification_stage_one">Баркал хьона Википеди тоаярах! Хьалха хье сецачара дӀа хӀана волалац/йолалац хьо?</string>
+  <string name="suggested_edits_reactivation_notification_stage_two">Минот йий хьога, Википеди дегӀайоалаеш болх дӀахо дӀахьоргболаш? ДӀахьажал укх тоаде мегаш долча хӀамашка.</string>
+  <string name="suggested_edits_contributions_screen_title">%s яхачун къахьегам</string>
   <string name="suggested_edits_contribution_language_label">Мотт</string>
   <string name="suggested_edits_contribution_date_time_label">Таьрахь/Ха</string>
   <string name="suggested_edits_contribution_type_label">Къахьегама тайпа</string>
@@ -874,6 +900,18 @@
     <item quantity="one">%d фискал тӀатехай Ӏа</item>
     <item quantity="other">%d фискал тӀатехай Ӏа</item>
   </plurals>
+  <string name="file_page_activity_title">Файла оагӀув</string>
+  <string name="file_page_add_image_caption_button">Суртах лаьцар тӀатоха</string>
+  <string name="file_page_add_image_tags_button">Сурта фосташ тӀатоха</string>
+  <string name="file_page_suggestion_reason">Тоаде мегаш дар белгалдаккхара бахьан</string>
+  <string name="description_edit_revert_subtitle">Баркал Википеди тоаярах!</string>
+  <string name="description_edit_revert_intro">Тхона хов Википеди тоае хьо гӀерташ хьо хинналга, амма цхьан доакъашхочо гӀалат зийннад. Ӏа тоадаьр юхадаккхара бахьан хила мег:</string>
+  <string name="description_edit_revert_reason1">&lt;a href=\"%1$s\"&gt;Кулгалдеш йолча принцапашта&lt;/a&gt; юкъера цхьанеца вӀашкабоагӀаш бацар хьа хувцам.</string>
+  <string name="description_edit_revert_reason2">эксперимент е вандализм йолчох тара дар хьа хувцам.</string>
+  <string name="description_edit_revert_history">Хьашт дале, &lt;a href=\"%1$s\"&gt;хувцамий тархьарга&lt;/a&gt; хьажа.</string>
+  <string name="description_edit_login_cancel_button_text">ЭШАЦ</string>
+  <string name="offline_read_permission_rationale">Автономни хьажа аьттув хургболаш хьа устройства чу хӀама дӀа а йилá алийта а дӀаязъе а могадар эша.</string>
+  <string name="offline_read_final_rationale">Хьа устройства чурча хӀамаш дӀаехкá йоадаеча моттигá тӀакхача вӀаштехьа хургдолаш автономни библиотеках пайда йибе беза.</string>
   <string name="size_gb">%.2f ГБ</string>
   <string name="size_mb">%.2f МБ</string>
   <string name="onboarding_skip">Теркал ма де</string>
@@ -883,6 +921,7 @@
   <string name="onboarding_explore_title">Тахкара керда наькъаш</string>
   <string name="onboarding_explore_text">Википеде гӀолла лела хьайна даим кердадувлача лентах пайда а эцаш. &lt;br/&gt;&lt;b&gt;Оттамаш&lt;/b&gt; де йиш цу лента тӀа хьай хьашт дар цо гойтаргдолаш — &lt;b&gt;укх дийнахьа&lt;/b&gt; тархьаре хинна хӀамаш е &lt;b&gt;ца ховш нийсъенна&lt;/b&gt; оагӀонаш.</string>
   <string name="onboarding_reading_list_sync_title">Дешара мугӀамаш синхронизацеца</string>
+  <string name="onboarding_reading_list_sync_text_v2">Хье офлайн вале а тӀехьагӀа хьайна еша безам бола оагӀоний мугӀамаш хьаде йиш я хьа. &lt;br/&gt;Хьай Википеди-аккаунтаца авторизаци хьае, тӀехьагӀа ешаргйолаш дӀаехка хинна оагӀонашца синхронизаци ергйолаш. &lt;a href=\"#login\"&gt;Хьахоттале Википедех&lt;/a&gt;</string>
   <string name="onboarding_analytics_title">Пайда эцарах отчеташ дӀаахийта</string>
   <string name="onboarding_analytics_offline_text">Ер приложени толашагӀа хилийта гӀо де тхона, оашош цох пайда мишта эца хьа а аьнна. Хьагулбаь бола хоам къайла хургба. &lt;a href=\"#privacy\"&gt;Хá ма дарра&lt;/a&gt;</string>
   <string name="onboarding_analytics_switch_title">Пайда эцарах отчёташ дӀаахийта</string>
@@ -906,6 +945,25 @@
     <item quantity="many">%d шу хьалха</item>
     <item quantity="other">%d шу хьалха</item>
   </plurals>
+  <string name="on_this_day_end_of_scroll_message">Хáна чухьа го баьккхар Ӏа 🚀</string>
+  <string name="on_this_day_back_to_future">Юха а хургдолчунгахьа</string>
+  <string name="languages_list_activity_title">Мотт тӀатоха</string>
+  <string name="languages_list_suggested_text">Ераш а мегаргда харжа</string>
+  <string name="languages_list_all_text">Деррига метташ</string>
+  <string name="wikipedia_languages_title">Википеден метташ</string>
+  <string name="wikipedia_languages_your_languages_text">Хьа метташ</string>
+  <string name="wikipedia_languages_add_language_text">Мотт тӀатоха</string>
+  <string name="wikipedia_languages_remove_text">Мотт дӀабаккха</string>
+  <string name="wikipedia_languages_remove_action_mode_title">Мотт дӀабаккха</string>
+  <plurals name="wikipedia_languages_remove_dialog_title">
+    <item quantity="one">ДӀабаккха хьахержа бола мотт?</item>
+    <item quantity="few">ДӀабаккха хьахержа дола метташ?</item>
+    <item quantity="many">ДӀабаккха хьахержа дола метташ?</item>
+    <item quantity="other">ДӀабаккха хьахержа дола метташ?</item>
+  </plurals>
+  <string name="wikipedia_languages_remove_dialog_content">Википеден кхыдолча меттала йолча разделашка мара вӀаштехьа хургдац хьа Лента яхача вкладка тӀа долчунга хьажа а сиха лахара фильтраш лелае а.</string>
+  <string name="wikipedia_languages_remove_warning_dialog_title">Деррига метташ дӀадаха йиш яц</string>
+  <string name="wikipedia_languages_remove_warning_dialog_content">Цхьа мотт мукъагӀа бита бéза хьа, дéша а лаха а йиш хургйолаш</string>
   <string name="more_language_options">кхы а да метташ</string>
   <string name="add_wikipedia_languages_text">Википеден метташ тӀатоха</string>
   <string name="dialog_of_remove_chinese_variants_from_app_lang_title">Метташта юкъера чинхой мотт дӀабаккха безий?</string>
@@ -944,6 +1002,7 @@
   <string name="talk_title">Къамаьл</string>
   <string name="talk_user_title">Къамаьл: %s</string>
   <string name="talk_new_topic">Керда тема</string>
+  <string name="talk_new_topic_submitted">Тема кепатехай.</string>
   <string name="talk_page_empty">Ер къамаьл-оагӀув яьсса я.</string>
   <string name="talk_add_reply">Жоп ле</string>
   <string name="talk_no_subject">(Тема йоацаш)</string>
@@ -952,13 +1011,15 @@
   <string name="talk_message_hint">Хоам язбе</string>
   <string name="talk_message_empty">Хоам баьсса хила мегаргбац.</string>
   <string name="talk_subject_empty">Тема яьсса хила мегаргьяц.</string>
+  <string name="talk_response_submitted">Жоп кепатехад.</string>
+  <string name="talk_snackbar_undo">Юхадаккха</string>
+  <string name="talk_last_modified">&lt;b&gt;ТӀеххьара хийцад укх хана: %1$s&lt;/b&gt; %2$s яхача доакъашхочо</string>
   <string name="menu_option_share_edit">Тоадар дӀадекъа</string>
   <string name="menu_option_user_profile">Профиль: %s</string>
   <string name="menu_option_user_contributions">Доакъашхочун къахьегам: %s</string>
   <string name="watchlist_details_watching_label">Зем бу</string>
   <string name="watchlist_details_watch_label">Зем бе</string>
   <string name="thank_label">Баркал алар</string>
-  <string name="go_to_user_page">Доакъашхочун оагӀув хьаелла</string>
   <string name="thank_dialog_title_text">Массанена гуш \'Баркал ала\'</string>
   <string name="thank_dialog_text">\'Баркал алар\' — Википедеца къахьегаш волчо пайда белга эггара аттагӀа дола дӀахайтар да. \'Баркал\' юхадаккха йиш яц, из массанена гуш а да.</string>
   <string name="thank_dialog_positive_button_text">Баркал дӀадахийта</string>

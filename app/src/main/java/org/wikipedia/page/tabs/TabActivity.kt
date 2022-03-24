@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.scale
+import androidx.core.view.isVisible
 import de.mrapp.android.tabswitcher.Animation
 import de.mrapp.android.tabswitcher.TabSwitcher
 import de.mrapp.android.tabswitcher.TabSwitcherDecorator
@@ -21,19 +22,17 @@ import org.wikipedia.R
 import org.wikipedia.WikipediaApp
 import org.wikipedia.activity.BaseActivity
 import org.wikipedia.analytics.TabFunnel
+import org.wikipedia.auth.AccountUtil
 import org.wikipedia.databinding.ActivityTabsBinding
 import org.wikipedia.main.MainActivity
 import org.wikipedia.navtab.NavTab
+import org.wikipedia.notifications.NotificationActivity
 import org.wikipedia.page.ExclusiveBottomSheetPresenter
 import org.wikipedia.page.PageActivity
 import org.wikipedia.readinglist.AddToReadingListDialog
-import org.wikipedia.util.DimenUtil
-import org.wikipedia.util.FeedbackUtil
-import org.wikipedia.util.L10nUtil
-import org.wikipedia.util.ResourceUtil
-import org.wikipedia.util.StringUtil
+import org.wikipedia.settings.Prefs
+import org.wikipedia.util.*
 import org.wikipedia.util.log.L
-import java.util.*
 
 class TabActivity : BaseActivity() {
     private lateinit var binding: ActivityTabsBinding
@@ -45,14 +44,14 @@ class TabActivity : BaseActivity() {
     private var tabUpdatedTimeMillis: Long = 0
     private val bottomSheetPresenter = ExclusiveBottomSheetPresenter()
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTabsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         funnel.logEnterList(app.tabCount)
         binding.tabCountsView.updateTabCount(false)
         binding.tabCountsView.setOnClickListener { onBackPressed() }
-        FeedbackUtil.setButtonLongPressToast(binding.tabCountsView)
+        FeedbackUtil.setButtonLongPressToast(binding.tabCountsView, binding.tabButtonNotifications)
         binding.tabSwitcher.setPreserveState(false)
         binding.tabSwitcher.decorator = object : TabSwitcherDecorator() {
             override fun onInflateView(inflater: LayoutInflater, parent: ViewGroup?, viewType: Int): View {
@@ -83,7 +82,7 @@ class TabActivity : BaseActivity() {
                     descriptionText.text = title.description
                     descriptionText.visibility = View.VISIBLE
                 }
-                L10nUtil.setConditionalLayoutDirection(view, title.wikiSite.languageCode())
+                L10nUtil.setConditionalLayoutDirection(view, title.wikiSite.languageCode)
             }
 
             override fun getViewType(tab: de.mrapp.android.tabswitcher.Tab, index: Int): Int {
@@ -124,9 +123,15 @@ class TabActivity : BaseActivity() {
             setDisplayHomeAsUpEnabled(true)
             title = ""
         }
+
+        binding.tabButtonNotifications.setOnClickListener {
+            if (AccountUtil.isLoggedIn) {
+                startActivity(NotificationActivity.newIntent(this))
+            }
+        }
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         if (cancelled) {
             funnel.logCancel(app.tabCount)
         }
@@ -135,9 +140,14 @@ class TabActivity : BaseActivity() {
         super.onDestroy()
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
         app.commitTabState()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateNotificationsButton(false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -177,6 +187,10 @@ class TabActivity : BaseActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onUnreadNotification() {
+        updateNotificationsButton(true)
     }
 
     private fun saveTabsToList() {
@@ -289,6 +303,22 @@ class TabActivity : BaseActivity() {
         finish()
     }
 
+    private fun updateNotificationsButton(animate: Boolean) {
+        if (AccountUtil.isLoggedIn) {
+            binding.tabButtonNotifications.isVisible = true
+            if (Prefs.notificationUnreadCount > 0) {
+                binding.tabButtonNotifications.setUnreadCount(Prefs.notificationUnreadCount)
+                if (animate) {
+                    binding.tabButtonNotifications.runAnimation()
+                }
+            } else {
+                binding.tabButtonNotifications.setUnreadCount(0)
+            }
+        } else {
+            binding.tabButtonNotifications.isVisible = false
+        }
+    }
+
     companion object {
         private const val LAUNCHED_FROM_PAGE_ACTIVITY = "launchedFromPageActivity"
         private const val MAX_CACHED_BMP_SIZE = 800
@@ -296,7 +326,6 @@ class TabActivity : BaseActivity() {
         const val RESULT_LOAD_FROM_BACKSTACK = 10
         const val RESULT_NEW_TAB = 11
 
-        @JvmStatic
         fun captureFirstTabBitmap(view: View) {
             clearFirstTabBitmap()
             var bmp: Bitmap? = null
@@ -341,7 +370,6 @@ class TabActivity : BaseActivity() {
             return Intent(context, TabActivity::class.java)
         }
 
-        @JvmStatic
         fun newIntentFromPageActivity(context: Context): Intent {
             return Intent(context, TabActivity::class.java)
                     .putExtra(LAUNCHED_FROM_PAGE_ACTIVITY, true)

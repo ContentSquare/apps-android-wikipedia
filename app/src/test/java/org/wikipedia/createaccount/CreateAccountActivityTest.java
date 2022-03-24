@@ -26,12 +26,19 @@ import static org.wikipedia.createaccount.CreateAccountActivity.validateInput;
 
     @Test public void testValidateInputInvalidPassword() {
         assertThat(validateInput("user", "foo", "password", ""),
-                is(ValidateResult.INVALID_PASSWORD));
+                is(ValidateResult.PASSWORD_TOO_SHORT));
     }
 
     @Test public void testValidateInputPasswordMismatch() {
         assertThat(validateInput("user", "password", "passw0rd", ""),
                 is(ValidateResult.PASSWORD_MISMATCH));
+    }
+
+    @Test public void testValidateInputPasswordIsUsername() {
+        assertThat(validateInput("password", "password", "password", ""),
+                is(ValidateResult.PASSWORD_IS_USERNAME));
+        assertThat(validateInput("password", "PassworD", "PassworD", ""),
+                is(ValidateResult.PASSWORD_IS_USERNAME));
     }
 
     @Test public void testValidateInputInvalidEmail() {

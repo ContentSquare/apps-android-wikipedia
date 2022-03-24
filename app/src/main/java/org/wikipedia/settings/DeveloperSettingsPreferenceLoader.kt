@@ -8,19 +8,17 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.wikipedia.R
 import org.wikipedia.WikipediaApp
-import org.wikipedia.analytics.eventplatform.Event
-import org.wikipedia.analytics.eventplatform.EventPlatformClient
+import org.wikipedia.analytics.eventplatform.UserContributionEvent
+import org.wikipedia.database.AppDatabase
 import org.wikipedia.dataclient.WikiSite
 import org.wikipedia.dataclient.page.PageSummary
 import org.wikipedia.history.HistoryEntry
 import org.wikipedia.notifications.NotificationPollBroadcastReceiver
 import org.wikipedia.page.PageActivity
 import org.wikipedia.page.PageTitle
-import org.wikipedia.readinglist.database.ReadingListDbHelper
 import org.wikipedia.readinglist.database.ReadingListPage
 import org.wikipedia.setupLeakCanary
-import org.wikipedia.suggestededits.provider.EditingSuggestionsProvider.getNextArticleWithMissingDescription
-import org.wikipedia.talk.TalkPageSeenDatabaseTable.resetAllUnseen
+import org.wikipedia.suggestededits.provider.EditingSuggestionsProvider
 import org.wikipedia.util.StringUtil.fromHtml
 
 internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCompat) : BasePreferenceLoader(fragment) {
@@ -66,11 +64,11 @@ internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCom
             val pages = (0 until numberOfArticles).map {
                 ReadingListPage(PageTitle("Malformed page $it", WikiSite.forLanguageCode("foo")))
             }
-            ReadingListDbHelper.addPagesToList(ReadingListDbHelper.defaultList, pages, true)
+            AppDatabase.instance.readingListPageDao().addPagesToList(AppDatabase.instance.readingListDao().defaultList, pages, true)
             true
         }
         findPreference(R.string.preference_key_missing_description_test).onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            getNextArticleWithMissingDescription(WikipediaApp.getInstance().wikiSite, 10)
+            EditingSuggestionsProvider.getNextArticleWithMissingDescription(WikipediaApp.getInstance().wikiSite, 10)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ summary: PageSummary ->
@@ -93,7 +91,7 @@ internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCom
             true
         }
         findPreference(R.string.preference_key_missing_description_test2).onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            getNextArticleWithMissingDescription(WikipediaApp.getInstance().wikiSite,
+            EditingSuggestionsProvider.getNextArticleWithMissingDescription(WikipediaApp.getInstance().wikiSite,
                     WikipediaApp.getInstance().language().appLanguageCodes[1], true, 10)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -116,7 +114,7 @@ internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCom
                     }
             true
         }
-        findPreference(R.string.preference_key_announcement_shown_dialogs).summary = activity.getString(R.string.preferences_developer_announcement_reset_shown_dialogs_summary, Prefs.getAnnouncementShownDialogs().size)
+        findPreference(R.string.preference_key_announcement_shown_dialogs).summary = activity.getString(R.string.preferences_developer_announcement_reset_shown_dialogs_summary, Prefs.announcementShownDialogs.size)
         findPreference(R.string.preference_key_announcement_shown_dialogs).onPreferenceClickListener = Preference.OnPreferenceClickListener {
             Prefs.resetAnnouncementShownDialogs()
             loadPreferences()
@@ -136,7 +134,8 @@ internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCom
             true
         }
         findPreference(R.string.preference_developer_clear_all_talk_topics).onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            resetAllUnseen()
+            AppDatabase.instance.talkPageSeenDao().deleteAll()
+                .subscribeOn(Schedulers.io()).subscribe()
             true
         }
         findPreference(R.string.preference_key_memory_leak_test).onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference, _: Any? ->
@@ -144,8 +143,7 @@ internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCom
             true
         }
         findPreference(R.string.preference_key_send_event_platform_test_event).onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            val event = Event("/analytics/test/1.0.0", "test.instrumentation")
-            EventPlatformClient.submit(event)
+            UserContributionEvent.logOpen()
             true
         }
     }
@@ -161,7 +159,7 @@ internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCom
 
     private fun createTestReadingList(listName: String, numOfLists: Int, numOfArticles: Int) {
         var index = 0
-        ReadingListDbHelper.allListsWithoutContents.asReversed().forEach {
+        AppDatabase.instance.readingListDao().getListsWithoutContents().asReversed().forEach {
             if (it.title.contains(listName)) {
                 val trimmedListTitle = it.title.substring(listName.length).trim()
                 index = if (trimmedListTitle.isEmpty()) index else trimmedListTitle.toInt().coerceAtLeast(index)
@@ -170,19 +168,19 @@ internal class DeveloperSettingsPreferenceLoader(fragment: PreferenceFragmentCom
         }
         for (i in 0 until numOfLists) {
             index += 1
-            val list = ReadingListDbHelper.createList("$listName $index", "")
+            val list = AppDatabase.instance.readingListDao().createList("$listName $index", "")
             val pages = (0 until numOfArticles).map {
                 ReadingListPage(PageTitle("${it + 1}", WikipediaApp.getInstance().wikiSite))
             }
-            ReadingListDbHelper.addPagesToList(list, pages, true)
+            AppDatabase.instance.readingListPageDao().addPagesToList(list, pages, true)
         }
     }
 
     private fun deleteTestReadingList(listName: String, numOfLists: Int) {
         var remainingNumOfLists = numOfLists
-        ReadingListDbHelper.allLists.forEach {
+        AppDatabase.instance.readingListDao().getAllLists().forEach {
             if (it.title.contains(listName) && remainingNumOfLists > 0) {
-                ReadingListDbHelper.deleteList(it)
+                AppDatabase.instance.readingListDao().deleteList(it)
                 remainingNumOfLists--
             }
         }
